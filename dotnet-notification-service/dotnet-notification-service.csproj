@@ -17,4 +17,10 @@
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Notifications\API\" />
+    <Folder Include="Features\Notifications\Domain\" />
+    <Folder Include="Features\Notifications\Infra\" />
+  </ItemGroup>
+
 </Project>

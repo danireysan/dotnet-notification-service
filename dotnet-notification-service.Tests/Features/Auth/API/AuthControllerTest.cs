@@ -1,7 +1,6 @@
 
 
 using Moq;
-using Xunit;
 using Microsoft.AspNetCore.Mvc;
 using dotnet_notification_service.Features.Auth.API;
 using dotnet_notification_service.Features.Auth.Domain.Entities;
@@ -16,32 +15,33 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
     public class AuthControllerTests
 
     {
-        readonly CreateUserRequestEntity request = new()
+        private readonly CreateUserRequestEntity _request = new()
         {
             Email = "test@example.com",
             Password = "password123"
         };
+        
 
         [Fact]
-        public async Task CreateUser_ShouldReturnCreated_WhenUsecaseSucceeds()
+        public async Task CreateUser_ShouldReturnCreated_WhenUseCaseSucceeds()
         {
             // Arrange
-            var mockUsecase = new Mock<ICreateUserUsecase>();
+            var mockUseCase = new Mock<ICreateUserUsecase>();
 
-            var expectedResult = new CreateUserResultEntity
+            var expectedResult = new UserAccessedEntity
             {
                 UserId = "12345",
                 Token = "some-jwt-token"
             };
 
-            mockUsecase
+            mockUseCase
                 .Setup(uc => uc.CallAsync(It.IsAny<CreateUserRequestEntity>()))
-                .ReturnsAsync(Either<Failure, CreateUserResultEntity>.Right(expectedResult));
+                .ReturnsAsync(Either<Failure, UserAccessedEntity>.Right(expectedResult));
 
-            var controller = new AuthController(mockUsecase.Object);
+            var controller = new AuthController(mockUseCase.Object);
 
             // Act
-            var result = await controller.CreateUser(request);
+            var result = await controller.CreateUser(_request);
 
             // Assert
             var createdResult = Assert.IsType<CreatedResult>(result.Result);
@@ -50,22 +50,22 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
 
 
         [Fact]
-        public async Task CreateUser_ShouldReturnBadRequest_WhenUsecaseFails()
+        public async Task CreateUser_ShouldReturnBadRequest_WhenUseCaseFails()
         {
             // Arrange
-            var failedMockUsecase = new Mock<ICreateUserUsecase>();
+            var failedMockUseCase = new Mock<ICreateUserUsecase>();
             var failure = new Failure
             {
                 Message = "User creation failed"
             };
 
-            failedMockUsecase.Setup(uc => uc.CallAsync(It.IsAny<CreateUserRequestEntity>()))
-                .ReturnsAsync(Either<Failure, CreateUserResultEntity>.Left(failure));
+            failedMockUseCase.Setup(uc => uc.CallAsync(It.IsAny<CreateUserRequestEntity>()))
+                .ReturnsAsync(Either<Failure, UserAccessedEntity>.Left(failure));
 
-            var controller = new AuthController(failedMockUsecase.Object);
+            var controller = new AuthController(failedMockUseCase.Object);
 
             // Act
-            var result = await controller.CreateUser(request);
+            var result = await controller.CreateUser(_request);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);

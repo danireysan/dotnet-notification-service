@@ -7,12 +7,12 @@ namespace dotnet_notification_service.Features.Auth.Infra.Repositories
 
     public class AuthRepository : IAuthRepository
     {
-        public Task<Either<Failure, CreateUserResultEntity>> CreateUserAsync(CreateUserRequestEntity createUserRequestEntity)
+        public Task<Either<Failure, UserAccessedEntity>> CreateUserAsync(CreateUserRequestEntity createUserRequestEntity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Either<Failure, CreateUserResultEntity>> LoginUserAsync(CreateUserRequestEntity createUserRequestEntity)
+        public Task<Either<Failure, UserAccessedEntity>> LoginUserAsync(CreateUserRequestEntity createUserRequestEntity)
         {
             throw new NotImplementedException();
         }

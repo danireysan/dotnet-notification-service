@@ -3,7 +3,7 @@ using dotnet_notification_service.Features.Auth.Domain.Entities;
 
 namespace dotnet_notification_service.Features.Auth.Application
 {
-    public interface ICreateUserUsecase : IUseCase<CreateUserResultEntity, CreateUserRequestEntity>
+    public interface ICreateUserUsecase : IUseCase<UserAccessedEntity, CreateUserRequestEntity>
     {
     }
 

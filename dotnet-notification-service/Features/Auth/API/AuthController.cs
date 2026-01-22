@@ -18,12 +18,12 @@ namespace dotnet_notification_service.Features.Auth.API
 
 
         [HttpPost]
-        public async Task<ActionResult<CreateUserResultEntity>> CreateUser([FromBody] CreateUserRequestEntity request)
+        public async Task<ActionResult<UserAccessedEntity>> CreateUser([FromBody] CreateUserRequestEntity request)
         {
 
             var result = await _createUserResultUsecase.CallAsync(request);
 
-            return result.Match<ActionResult<CreateUserResultEntity>>(
+            return result.Match<ActionResult<UserAccessedEntity>>(
                 failure => BadRequest(new { Message = failure.Message }),
                 createUserResult => Created(string.Empty, createUserResult)
             );

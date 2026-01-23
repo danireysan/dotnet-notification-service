@@ -1,79 +1,83 @@
-
-
-using Moq;
-using Microsoft.AspNetCore.Mvc;
-using dotnet_notification_service.Features.Auth.API;
-using dotnet_notification_service.Features.Auth.Domain.Entities;
-
-using Funcky.Monads;
-using dotnet_notification_service.Domain.Entities;
+using dotnet_notification_service.Core.Domain.Entities;
+using dotnet_notification_service.Features.Auth.API.Controllers;
+using dotnet_notification_service.Features.Auth.API.DTOS;
 using dotnet_notification_service.Features.Auth.Application;
-
+using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
+using Funcky.Monads;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 
 namespace dotnet_notification_service.Tests.Features.Auth.API
 {
     public class AuthControllerTests
 
     {
-        private readonly CreateUserRequestEntity _request = new()
-        {
-            Email = "test@example.com",
-            Password = "password123"
-        };
-        
+        private static readonly Mock<ICreateUserUseCase> MockUseCase = new();
+
+        private static CreateUserRequest mockCreateUserRequest = new(
+            "some@mail.com",
+            "somePassword"
+        );
 
         [Fact]
         public async Task CreateUser_ShouldReturnCreated_WhenUseCaseSucceeds()
         {
-            // Arrange
-            var mockUseCase = new Mock<ICreateUserUsecase>();
+            // ? ARRANGE
+            // expected result
+            var expectedResult = new CreateUserResult(
+                "someToken",
+                "someUserId"
+            );
 
-            var expectedResult = new UserAccessedEntity
-            {
-                UserId = "12345",
-                Token = "some-jwt-token"
-            };
+            var expectedResponse = new CreateUserResponse(
+                expectedResult.Token
+            );
 
-            mockUseCase
-                .Setup(uc => uc.CallAsync(It.IsAny<CreateUserRequestEntity>()))
-                .ReturnsAsync(Either<Failure, UserAccessedEntity>.Right(expectedResult));
+            // perform expected result in UseCase
+            MockUseCase
+                .Setup(uc => uc.CallAsync(It.IsAny<CreateUserCommand>()))
+                .ReturnsAsync(Either<Failure, CreateUserResult>.Right(expectedResult));
 
-            var controller = new AuthController(mockUseCase.Object);
 
-            // Act
-            var result = await controller.CreateUser(_request);
+            // Use the UseCase in the controller
+            var controller = new AuthController(MockUseCase.Object);
 
-            // Assert
+            // ? ACT
+            // Just call the endpoint
+            var result = await controller.CreateUser(mockCreateUserRequest);
+
+            // ? ASSERT
+            // what should you assert? that you got the expected HTTP result
+
+
             var createdResult = Assert.IsType<CreatedResult>(result.Result);
-            Assert.Equal(expectedResult, createdResult.Value);
+            var createdValue = Assert.IsType<CreateUserResponse>(createdResult.Value);
+
+            Assert.Equal(expectedResponse.Token, createdValue.Token);
         }
 
 
         [Fact]
         public async Task CreateUser_ShouldReturnBadRequest_WhenUseCaseFails()
         {
-            // Arrange
-            var failedMockUseCase = new Mock<ICreateUserUsecase>();
+            //? Arrange
             var failure = new Failure
             {
-                Message = "User creation failed"
+                Message = "someError"
             };
 
-            failedMockUseCase.Setup(uc => uc.CallAsync(It.IsAny<CreateUserRequestEntity>()))
-                .ReturnsAsync(Either<Failure, UserAccessedEntity>.Left(failure));
-
-            var controller = new AuthController(failedMockUseCase.Object);
-
-            // Act
-            var result = await controller.CreateUser(_request);
-
-            // Assert
+            // perform expected result in UseCase
+            MockUseCase
+                .Setup(uc => uc.CallAsync(It.IsAny<CreateUserCommand>()))
+                .ReturnsAsync(Either<Failure, CreateUserResult>.Left(failure));
+            // Use the UseCase in the controller
+            var controller = new AuthController(MockUseCase.Object);
+            //? Act
+            var result = await controller.CreateUser(mockCreateUserRequest);
+            //? Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.Equal(400, badRequestResult.StatusCode);
-
-
+            var returnedFailure = Assert.IsType<Failure>(badRequestResult.Value);
+            Assert.Equal(failure.Message, returnedFailure.Message);
         }
     }
-
-
 }

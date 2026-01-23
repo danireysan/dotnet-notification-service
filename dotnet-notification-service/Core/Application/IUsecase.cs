@@ -1,7 +1,7 @@
-using dotnet_notification_service.Domain.Entities;
+using dotnet_notification_service.Core.Domain.Entities;
 using Funcky.Monads;
 
-namespace dotnet_notification_service.Core.Usecases
+namespace dotnet_notification_service.Core.Application
 {
     public interface IUseCase<T, TParams>
         where T : notnull

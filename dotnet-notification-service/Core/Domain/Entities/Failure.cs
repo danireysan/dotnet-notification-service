@@ -1,4 +1,4 @@
-namespace dotnet_notification_service.Domain.Entities
+namespace dotnet_notification_service.Core.Domain.Entities
 {
     public class Failure
     {

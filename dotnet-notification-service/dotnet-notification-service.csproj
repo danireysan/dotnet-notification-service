@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Http" Version="8.1.1" />
     <PackageReference Include="Funcky" Version="3.5.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.2" />
@@ -18,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Auth\Domain\Repositories\" />
+    <Folder Include="Features\Auth\Infra\Repositories\" />
     <Folder Include="Features\Notifications\API\" />
     <Folder Include="Features\Notifications\Domain\" />
     <Folder Include="Features\Notifications\Infra\" />

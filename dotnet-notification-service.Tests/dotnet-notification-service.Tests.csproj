@@ -23,8 +23,4 @@
     <ProjectReference Include="..\dotnet-notification-service\dotnet-notification-service.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Notifications\API\" />
-  </ItemGroup>
-
 </Project>

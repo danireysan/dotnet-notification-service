@@ -14,7 +14,7 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
     {
         private static readonly Mock<ICreateUserUseCase> MockUseCase = new();
 
-        private static CreateUserRequest mockCreateUserRequest = new(
+        private static readonly CreateUserRequest MockCreateUserRequest = new(
             "some@mail.com",
             "somePassword"
         );
@@ -44,7 +44,7 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
 
             // ? ACT
             // Just call the endpoint
-            var result = await controller.CreateUser(mockCreateUserRequest);
+            var result = await controller.CreateUser(MockCreateUserRequest);
 
             // ? ASSERT
             // what should you assert? that you got the expected HTTP result
@@ -73,7 +73,7 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
             // Use the UseCase in the controller
             var controller = new AuthController(MockUseCase.Object);
             //? Act
-            var result = await controller.CreateUser(mockCreateUserRequest);
+            var result = await controller.CreateUser(MockCreateUserRequest);
             //? Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
             var returnedFailure = Assert.IsType<Failure>(badRequestResult.Value);

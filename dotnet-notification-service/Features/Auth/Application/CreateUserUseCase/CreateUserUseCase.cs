@@ -33,10 +33,13 @@ namespace dotnet_notification_service.Features.Auth.Application.CreateUserUseCas
                     failure = left;
                     throw new Exception(left.Message);
                 });
+                
+                
                 var addUser = await userRepository.Add(user);
-
+                var generateToken = await tokenRepository.Generate(user);
                 return from _ in addUser
-                    select new CreateUserResult("", user.Id.ToString());
+                    from token in generateToken
+                    select new CreateUserResult(token, user.Id.ToString());
             }
             catch (Exception e)
             {

@@ -8,5 +8,6 @@
 - I chose ASP.NET Core Identity with cookie authentication to keep the project self-contained and easy to run for reviewers. In a production system, this could be replaced with an external identity provider such as Microsoft Entra ID.
 
 ## Know issues
+- IsMailUnique method has a return type of boolean although by design it only can return true or a failure, which is a confusing design, it is made this way to ensure we return a Conflict Failure without additional validation
 
 

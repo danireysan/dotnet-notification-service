@@ -60,8 +60,8 @@ public class CreateUserUseCaseTest
             Message = "Email already exists.",
         };
         _userRepoMock
-            .Setup(repo => repo.IsMailUnique(createUserCommand.Email))
-            .ReturnsAsync(Either<Failure, Unit>.Left(expectedFailure));
+            .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
+            .ReturnsAsync(Either<Failure, EmailAddress>.Left(expectedFailure));
         
         //? Act
         var result = await _useCase.CallAsync(createUserCommand);

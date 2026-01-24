@@ -14,10 +14,10 @@ namespace dotnet_notification_service.Features.Auth.Application.CreateUserUseCas
         public async Task<Either<Failure, CreateUserResult>> CallAsync(CreateUserCommand @params)
         {
 
-            var isMailUnique = await userRepository.IsMailUnique(@params.Email);
+            var ensureMailIsUnique = await userRepository.EnsureMailIsUnique(@params.Email);
             return 
                 from _ in EmailAddress.Create(@params.Email)
-                from __ in isMailUnique
+                from uniqueEmailAddress in ensureMailIsUnique
                 select new CreateUserResult("", "");;
 
         }

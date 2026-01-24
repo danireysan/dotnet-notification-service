@@ -23,4 +23,9 @@
     <ProjectReference Include="..\dotnet-notification-service\dotnet-notification-service.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Auth\Domain\Repositories\" />
+    <Folder Include="Features\Auth\Infra\" />
+  </ItemGroup>
+
 </Project>

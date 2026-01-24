@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using dotnet_notification_service.Features.Auth.API.DTOS;
 using dotnet_notification_service.Features.Auth.Application;
+using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
 using dotnet_notification_service.Features.Auth.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 

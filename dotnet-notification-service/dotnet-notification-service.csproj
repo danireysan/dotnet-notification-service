@@ -19,8 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Auth\Domain\Repositories\" />
-    <Folder Include="Features\Auth\Infra\Repositories\" />
     <Folder Include="Features\Notifications\API\" />
     <Folder Include="Features\Notifications\Domain\" />
     <Folder Include="Features\Notifications\Infra\" />

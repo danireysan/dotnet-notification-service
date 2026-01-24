@@ -7,7 +7,7 @@ using UnprocessableEntity = Microsoft.AspNetCore.Http.HttpResults.UnprocessableE
 
 namespace dotnet_notification_service.Features.Auth.Application.CreateUserUseCase
 {
-    public class CreateUserUseCase(IUserRepository userRepository, ICustomPassWordHasher hasher, ITokenRepository tokenRepository) : ICreateUserUseCase
+    public class CreateUserUseCase(IUserRepository userRepository, ICustomPasswordHasher hasher, ITokenRepository tokenRepository) : ICreateUserUseCase
     {
 
 
@@ -15,10 +15,12 @@ namespace dotnet_notification_service.Features.Auth.Application.CreateUserUseCas
         {
 
             var ensureMailIsUnique = await userRepository.EnsureMailIsUnique(@params.Email);
+            var hashPassword = await hasher.HashPassword(@params.Email, @params.Password);
             return 
                 from _ in EmailAddress.Create(@params.Email)
                 from uniqueEmailAddress in ensureMailIsUnique
-                select new CreateUserResult("", "");;
+                from hash in hashPassword
+                select new CreateUserResult("", "");
 
         }
     }

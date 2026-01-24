@@ -10,19 +10,18 @@ using Moq;
 namespace dotnet_notification_service.Tests.Features.Auth.Application;
 
 public class CreateUserUseCaseTest
-{   
-    
+{
     private readonly Mock<IUserRepository> _userRepoMock;
-    private readonly Mock<ICustomPassWordHasher> _hasherMock;
+    private readonly Mock<ICustomPasswordHasher> _hasherMock;
     private readonly Mock<ITokenRepository> _tokenMock;
     private readonly CreateUserUseCase _useCase;
 
     public CreateUserUseCaseTest()
     {
         _userRepoMock = new Mock<IUserRepository>();
-        _hasherMock = new Mock<ICustomPassWordHasher>();
+        _hasherMock = new Mock<ICustomPasswordHasher>();
         _tokenMock = new Mock<ITokenRepository>();
-        
+
         // Inject both into the UseCase
         _useCase = new CreateUserUseCase(_userRepoMock.Object, _hasherMock.Object, _tokenMock.Object);
     }
@@ -41,13 +40,9 @@ public class CreateUserUseCaseTest
         var result = await _useCase.CallAsync(createUserCommand);
         //? Assert
         result.Switch(
-            left: left =>
-            {
-                Assert.IsType<UnprocessableEntityFailure>(left);
-            },
+            left: left => { Assert.IsType<UnprocessableEntityFailure>(left); },
             right: _ => { Assert.Fail("Expected a failure"); }
         );
-
     }
 
     [Fact]
@@ -62,41 +57,52 @@ public class CreateUserUseCaseTest
         _userRepoMock
             .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
             .ReturnsAsync(Either<Failure, EmailAddress>.Left(expectedFailure));
-        
+
         //? Act
         var result = await _useCase.CallAsync(createUserCommand);
         //? Assert
         result.Switch(
-            left: left =>
-            {
-                Assert.IsType<ConflictFailure>(left);
-            },
+            left: left => { Assert.IsType<ConflictFailure>(left); },
             right: _ => { Assert.Fail("Expected a failure"); }
         );
     }
-        
-    
+
 
     [Fact]
     public async Task CallAsync_ShouldReturnFailure_WhenHashFails()
     {
         //? Arrange
+        var createUserCommand = new CreateUserCommand("user@mail.com", "mail");
+        var expectedFailure = new ServerFailure
+        {
+            Message = "Hash failure",
+        };
+
+        _userRepoMock
+            .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
+            .ReturnsAsync(Either<Failure, EmailAddress>.Right(EmailAddress.MockCreate(createUserCommand.Email)));
+        _hasherMock
+            .Setup(repo => repo.HashPassword(createUserCommand.Email,  createUserCommand.Password))
+            .ReturnsAsync(Either<Failure, PasswordHash>.Left(expectedFailure));
+                
+
+        
         //? Act
+        var result = await _useCase.CallAsync(createUserCommand);
         //? Assert
+        result.Switch(
+            left: left => { Assert.IsType<ServerFailure>(left); },
+            right: _ => { Assert.Fail("Expected a failure"); }
+        );
     }
 
     [Fact]
     public async Task CallAsync_ShouldReturnFailure_WhenCreateUserFails()
     {
-        
     }
 
     [Fact]
     public async Task CallAsync_ShouldReturnUserCreatedResult_WhenPasswordIsHashedAndUserIdIsCreated()
     {
-        
-        
     }
-
-
 }

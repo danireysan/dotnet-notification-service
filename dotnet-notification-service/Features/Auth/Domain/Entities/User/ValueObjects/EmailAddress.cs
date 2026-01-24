@@ -10,6 +10,14 @@ public sealed record EmailAddress
 
     private EmailAddress(string value) => Value = value;
 
+    
+    //! Only created for testing purposes do not use
+    public static EmailAddress MockCreate(string value)
+    
+    {
+        return new EmailAddress(value);
+    }
+
     public static Either<Failure, EmailAddress> Create(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))

@@ -16,3 +16,9 @@ public class ConflictFailure : Failure
 {
     
 }
+
+// 500
+public class ServerFailure : Failure
+{
+    
+}

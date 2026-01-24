@@ -14,6 +14,11 @@ public class UserEntity
         PasswordHash = passwordHash;
     }
 
+    
+    
+
+    
+
     public static UserEntity Create(
         UserId id,
         EmailAddress email,

@@ -16,6 +16,7 @@
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.6.3" />
+    <PackageReference Include="NUlid" Version="1.7.3" />
   </ItemGroup>
 
   <ItemGroup>

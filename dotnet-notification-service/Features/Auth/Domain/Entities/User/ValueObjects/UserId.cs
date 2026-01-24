@@ -1,17 +1,10 @@
+using NUlid;
+
 namespace dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObjects;
 
-public sealed record UserId
+public sealed record UserId(Ulid Value)
 {
-    public string Value { get; }
+    public static UserId New() => new(Ulid.NewUlid());
 
-    public UserId(string value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-            // TODO: dont throw use failure
-            throw new ArgumentException("Password hash cannot be empty");
-
-        Value = value;
-    }
-
-    public override string ToString() => Value;
+    public override string ToString() => Value.ToString();
 }

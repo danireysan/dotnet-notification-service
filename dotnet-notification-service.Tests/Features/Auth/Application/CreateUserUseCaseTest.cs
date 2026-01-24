@@ -3,6 +3,7 @@ using dotnet_notification_service.Features.Auth.Application;
 using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
 using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObjects;
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
+using Funcky;
 using Funcky.Monads;
 using Moq;
 
@@ -60,7 +61,7 @@ public class CreateUserUseCaseTest
         };
         _userRepoMock
             .Setup(repo => repo.IsMailUnique(createUserCommand.Email))
-            .ReturnsAsync(Either<Failure, bool>.Left(expectedFailure));
+            .ReturnsAsync(Either<Failure, Unit>.Left(expectedFailure));
         
         //? Act
         var result = await _useCase.CallAsync(createUserCommand);

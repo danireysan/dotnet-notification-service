@@ -9,5 +9,10 @@ public class Failure
 // For 422 Error
 public class UnprocessableEntityFailure : Failure
 {
+}
+
+//
+public class ConflictFailure : Failure
+{
     
 }

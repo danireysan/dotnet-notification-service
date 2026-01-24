@@ -53,18 +53,28 @@ public class CreateUserUseCaseTest
     public async Task CallAsync_ShouldReturnFailure_WhenEmailAlreadyExists()
     {
         //? Arrange
+        var createUserCommand = new CreateUserCommand("user@mail.com", "mail");
+        var expectedFailure = new ConflictFailure
+        {
+            Message = "Email already exists.",
+        };
+        _userRepoMock
+            .Setup(repo => repo.IsMailUnique(createUserCommand.Email))
+            .ReturnsAsync(Either<Failure, bool>.Left(expectedFailure));
+        
         //? Act
+        var result = await _useCase.CallAsync(createUserCommand);
         //? Assert
+        result.Switch(
+            left: left =>
+            {
+                Assert.IsType<ConflictFailure>(left);
+            },
+            right: _ => { Assert.Fail("Expected a failure"); }
+        );
     }
         
-
-    [Fact]
-    public async Task CallAsync_ShouldHashPassword_WhenEmailIsValid()
-    {
-        //? Arrange
-        //? Act
-        //? Assert
-    }
+    
 
     [Fact]
     public async Task CallAsync_ShouldReturnFailure_WhenHashFails()
@@ -72,6 +82,19 @@ public class CreateUserUseCaseTest
         //? Arrange
         //? Act
         //? Assert
+    }
+
+    [Fact]
+    public async Task CallAsync_ShouldReturnFailure_WhenCreateUserFails()
+    {
+        
+    }
+
+    [Fact]
+    public async Task CallAsync_ShouldReturnUserCreatedResult_WhenPasswordIsHashedAndUserIdIsCreated()
+    {
+        
+        
     }
 
 

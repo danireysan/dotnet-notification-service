@@ -13,16 +13,16 @@ public class UserEntity
         Email = email;
         PasswordHash = passwordHash;
     }
-
     
     
-
+    
     
 
     public static UserEntity Create(
         UserId id,
         EmailAddress email,
-        PasswordHash passwordHash)
+        PasswordHash passwordHash
+        )
     {
         return new UserEntity(id, email, passwordHash);
     }

@@ -81,7 +81,7 @@ public class CreateUserUseCaseTest
 
         _userRepoMock
             .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
-            .ReturnsAsync(Either<Failure, EmailAddress>.Right(EmailAddress.MockCreate(createUserCommand.Email)));
+            .ReturnsAsync(Either<Failure, EmailAddress>.Right(EmailAddress.FromPersistence(createUserCommand.Email)));
         _hasherMock
             .Setup(repo => repo.HashPassword(createUserCommand.Email,  createUserCommand.Password))
             .ReturnsAsync(Either<Failure, PasswordHash>.Left(expectedFailure));
@@ -106,7 +106,7 @@ public class CreateUserUseCaseTest
         {
             Message = "DB failure",
         };
-        var emailAddress = EmailAddress.MockCreate(createUserCommand.Email);
+        var emailAddress = EmailAddress.FromPersistence(createUserCommand.Email);
         var hashPassword = new PasswordHash(createUserCommand.Password);
         
         _userRepoMock
@@ -137,7 +137,7 @@ public class CreateUserUseCaseTest
         {
             Message = "Token failure",
         };
-        var emailAddress = EmailAddress.MockCreate(createUserCommand.Email);
+        var emailAddress = EmailAddress.FromPersistence(createUserCommand.Email);
         var hashPassword = new PasswordHash(createUserCommand.Password);
         
         _userRepoMock
@@ -172,7 +172,7 @@ public class CreateUserUseCaseTest
             "someToken", "someId"
         );
         
-        var emailAddress = EmailAddress.MockCreate(createUserCommand.Email);
+        var emailAddress = EmailAddress.FromPersistence(createUserCommand.Email);
         var hashPassword = new PasswordHash(createUserCommand.Password);
         
         _userRepoMock

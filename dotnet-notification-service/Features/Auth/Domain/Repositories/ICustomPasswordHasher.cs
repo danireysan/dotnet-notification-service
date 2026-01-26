@@ -8,5 +8,4 @@ namespace dotnet_notification_service.Features.Auth.Domain.Repositories;
 public interface ICustomPasswordHasher
 {
     Task<Either<Failure, PasswordHash>> HashPassword(string email, string password);
-    Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string? email);
 }

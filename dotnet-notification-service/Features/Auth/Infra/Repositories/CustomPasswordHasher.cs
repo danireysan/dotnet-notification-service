@@ -12,8 +12,5 @@ public class CustomPasswordHasher : ICustomPasswordHasher
         throw new NotImplementedException();
     }
 
-    public Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string? email)
-    {
-        throw new NotImplementedException();
-    }
+    
 }

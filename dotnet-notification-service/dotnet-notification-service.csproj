@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Notifications\API\" />
+    <Folder Include="Features\Notifications\API\DTOs\" />
     <Folder Include="Features\Notifications\Domain\" />
     <Folder Include="Features\Notifications\Infra\" />
   </ItemGroup>

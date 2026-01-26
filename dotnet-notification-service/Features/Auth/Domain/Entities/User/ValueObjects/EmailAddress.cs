@@ -11,8 +11,8 @@ public sealed record EmailAddress
     private EmailAddress(string value) => Value = value;
 
     
-    //! Only created for testing purposes do not use
-    public static EmailAddress MockCreate(string value)
+    //! Do not use to create Email address as it lacks validations
+    public static EmailAddress FromPersistence(string value)
     
     {
         return new EmailAddress(value);

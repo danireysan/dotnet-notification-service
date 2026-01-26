@@ -23,7 +23,6 @@ public class CreateUserUseCase(
                 from _ in ensureMailIsUnique
                 from hash in hashPassword
                 select UserEntity.Create(
-                    UserId.New(),
                     mail,
                     hash
                 );

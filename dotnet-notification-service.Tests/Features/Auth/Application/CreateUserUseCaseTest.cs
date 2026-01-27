@@ -22,6 +22,7 @@ public class CreateUserUseCaseTest
     private readonly EmailAddress _defaultEmailAddress;
     private readonly PasswordHash _defaultHashPassword;
     private readonly UserEntity _defaultUserEntity;
+    private readonly UserId _defaultUserId;
 
     public CreateUserUseCaseTest()
     {
@@ -29,14 +30,16 @@ public class CreateUserUseCaseTest
         _hasherMock = new Mock<ICustomPasswordHasher>();
         _tokenMock = new Mock<ITokenRepository>();
 
+
         // Inject both into the UseCase
         _useCase = new CreateUserUseCase(_userRepoMock.Object, _hasherMock.Object, _tokenMock.Object);
 
         // Initialize shared test data
         _defaultCommand = new CreateUserCommand("user@mail.com", "mail");
+        _defaultUserId = UserId.New();
         _defaultEmailAddress = EmailAddress.FromPersistence(_defaultCommand.Email);
         _defaultHashPassword = new PasswordHash(_defaultCommand.Password);
-        _defaultUserEntity = UserEntity.Create(_defaultEmailAddress, _defaultHashPassword);
+        _defaultUserEntity = UserEntity.Create(_defaultUserId, _defaultEmailAddress, _defaultHashPassword);
     }
 
     [Theory]
@@ -95,7 +98,7 @@ public class CreateUserUseCaseTest
             .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
             .ReturnsAsync(Either<Failure, EmailAddress>.Right(EmailAddress.FromPersistence(createUserCommand.Email)));
         _hasherMock
-            .Setup(repo => repo.HashPassword(It.IsAny<String>(),  createUserCommand.Password))
+            .Setup(repo => repo.HashPassword(_defaultUserId,createUserCommand.Password))
             .ReturnsAsync(Either<Failure, PasswordHash>.Left(expectedFailure));
                 
 
@@ -127,7 +130,7 @@ public class CreateUserUseCaseTest
             .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
             .ReturnsAsync(Either<Failure, EmailAddress>.Right(_defaultEmailAddress));
         _hasherMock
-            .Setup(repo => repo.HashPassword(createUserCommand.Email,createUserCommand.Password))
+            .Setup(repo => repo.HashPassword(_defaultUserId,createUserCommand.Password))
             .ReturnsAsync(Either<Failure, PasswordHash>.Right(_defaultHashPassword));
         _userRepoMock
             .Setup(repo => repo.Add(It.IsAny<UserEntity>()))
@@ -159,7 +162,7 @@ public class CreateUserUseCaseTest
             .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
             .ReturnsAsync(Either<Failure, EmailAddress>.Right(_defaultEmailAddress));
         _hasherMock
-            .Setup(repo => repo.HashPassword(It.IsAny<String>(),  createUserCommand.Password))
+            .Setup(repo => repo.HashPassword(_defaultUserId,createUserCommand.Password))
             .ReturnsAsync(Either<Failure, PasswordHash>.Right(_defaultHashPassword));
         _userRepoMock
             .Setup(repo => repo.Add(It.IsAny<UserEntity>()))
@@ -182,7 +185,6 @@ public class CreateUserUseCaseTest
     public async Task CallAsync_ShouldReturnUserCreatedResult_WhenPasswordIsHashedAndUserIdIsCreated()
     {
         //? Arrange
-        var createUserCommand = _defaultCommand;
         var expectedResult = new CreateUserResult(
             "someToken", "someId"
         );
@@ -190,10 +192,10 @@ public class CreateUserUseCaseTest
        
         
         _userRepoMock
-            .Setup(repo => repo.EnsureMailIsUnique(createUserCommand.Email))
+            .Setup(repo => repo.EnsureMailIsUnique(_defaultCommand.Email))
             .ReturnsAsync(Either<Failure, EmailAddress>.Right(_defaultEmailAddress));
         _hasherMock
-            .Setup(repo => repo.HashPassword(It.IsAny<String>(),  createUserCommand.Password))
+            .Setup(repo => repo.HashPassword(It.IsAny<UserId>(), _defaultCommand.Password))
             .ReturnsAsync(Either<Failure, PasswordHash>.Right(_defaultHashPassword));
         _userRepoMock
             .Setup(repo => repo.Add(It.IsAny<UserEntity>()))
@@ -202,7 +204,9 @@ public class CreateUserUseCaseTest
             .Setup(repo => repo.Generate(It.IsAny<UserEntity>()))
             .ReturnsAsync(Either<Failure, string>.Right(expectedResult.Token));
         //? Act
-        var useCaseResult = await _useCase.CallAsync(createUserCommand);
+        var useCaseResult = await _useCase.CallAsync(_defaultCommand);
+        
+        
         //? Assert
         useCaseResult.Switch(
             left: left => { Assert.Fail(left.Message); },

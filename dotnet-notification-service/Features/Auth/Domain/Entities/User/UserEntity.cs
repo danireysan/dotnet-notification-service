@@ -19,11 +19,12 @@ public class UserEntity
     
 
     public static UserEntity Create(
+        UserId id,
         EmailAddress email,
         PasswordHash passwordHash
         )
     {
         
-        return new UserEntity(UserId.New(), email, passwordHash);
+        return new UserEntity(id, email, passwordHash);
     }
 }

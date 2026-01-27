@@ -6,5 +6,5 @@ namespace dotnet_notification_service.Features.Auth.Domain.Repositories;
 
 public interface ITokenRepository
 {
-    Task<Either<Failure, string>> Generate(UserEntity isAny);
+    Task<Either<Failure, string>> Generate(UserEntity user);
 }

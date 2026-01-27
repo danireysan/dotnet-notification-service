@@ -9,20 +9,23 @@ namespace dotnet_notification_service.Features.Auth.Application.CreateUserUseCas
 public class CreateUserUseCase(
     IUserRepository userRepository,
     ICustomPasswordHasher hasher,
-    ITokenRepository tokenRepository) : ICreateUserUseCase
+    ITokenRepository tokenRepository
+    ) : ICreateUserUseCase
 {
     public async Task<Either<Failure, CreateUserResult>> CallAsync(CreateUserCommand @params)
     {
         Failure? failure = null;
         try
         {
+            var id = UserId.New();
             var ensureMailIsUnique = await userRepository.EnsureMailIsUnique(@params.Email);
-            var hashPassword = await hasher.HashPassword(@params.Email, @params.Password);
+            var hashPassword = await hasher.HashPassword(id, @params.Password);
             var userEither =
                 from mail in EmailAddress.Create(@params.Email)
                 from _ in ensureMailIsUnique
                 from hash in hashPassword
                 select UserEntity.Create(
+                    id,
                     mail,
                     hash
                 );

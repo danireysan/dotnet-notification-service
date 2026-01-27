@@ -1,7 +1,9 @@
 using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObjects;
+using JetBrains.Annotations;
 
 namespace dotnet_notification_service.Tests.Features.Auth.Domain.Entities.User.ValueObjects;
 
+[TestSubject(typeof(EmailAddress))]
 public class EmailAddressTest
 {
     [Theory]

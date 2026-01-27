@@ -7,7 +7,7 @@ namespace dotnet_notification_service.Features.Auth.Infra.Repositories;
 
 public class TokenRepository : ITokenRepository
 {
-    public Task<Either<Failure, string>> Generate(UserEntity isAny)
+    public Task<Either<Failure, string>> Generate(UserEntity user)
     {
         throw new NotImplementedException();
     }

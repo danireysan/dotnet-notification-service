@@ -7,8 +7,11 @@
 - I did not use Native AOT because despite its better performance, the speed of development in this project is important, and hot reload speeds up the iterative process.
 - The project uses Funcky a lightweight FP library to create more explicit contracts and declarative pipelines
 - The project stores user Ids as ULID so we can have faster indexes
-- I chose ASP.NET Core Identity with cookie authentication to keep the project self-contained and easy to run for reviewers. In a production system, this could be replaced with an external identity provider such as Microsoft Entra ID.
+- I chose ASP.NET Core Identity with token auth to keep the project self-contained and easy to run for reviewers. In a production system, this could be replaced with an external identity provider such as Microsoft Entra ID.
+- I created a JwtOptions POCO to keep the JWT configuration in one place and make it easier to change in the future.
 
 ## Know issues
+- The project does not have automatic DI registration so every new service needs to be registered manually
+
 
 

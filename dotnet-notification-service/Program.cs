@@ -1,3 +1,4 @@
+using System.Text;
 using Asp.Versioning;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
@@ -5,17 +6,19 @@ using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObject
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+// Config api versioning
 builder.Services.AddApiVersioning(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
@@ -24,57 +27,52 @@ builder.Services.AddApiVersioning(options =>
 
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
-    
 
-
+// Parse JWT config
 builder.Services.AddOptions<JwtOptions>()
     .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
     .ValidateDataAnnotations() 
     .ValidateOnStart();
 
+
+// Init EF contexts
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(connectionString,
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "users")));
 
-
+// Inject Auth Dependencies
 builder.Services.AddScoped<IPasswordHasher<UserId>, PasswordHasher<UserId>>();
 builder.Services.AddScoped<ICustomPasswordHasher, PasswordHashingService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
-var app = builder.Build();
-if (args.Contains("--migrate"))
+// JWT config
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+
+
+builder.Services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme, options =>
 {
-    using var scope = app.Services.CreateScope();
-    var services = scope.ServiceProvider;
-    var logger = services.GetRequiredService<ILogger<Program>>();
-    var context = services.GetRequiredService<UserContext>();
 
-    for (var i = 0; i < 5; i++)
+    var jwtSettings = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>();
+    
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        try
-        {
-            logger.LogInformation("Attempting to apply migrations (Attempt {Attempt})...", i + 1);
-            await context.Database.MigrateAsync();
-            logger.LogInformation("Migrations applied successfully.");
-            break; // Success!
-        }
-        catch (Exception ex)
-        {
-            if (i == 4) // Last attempt failed
-            {
-                logger.LogCritical(ex, "Could not apply migrations after multiple attempts.");
-                throw;
-            }
+        ClockSkew =  TimeSpan.Zero,
+        ValidIssuer = jwtSettings!.Issuer,
+        ValidAudience = jwtSettings!.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.Key))
+    };
+});
 
-            logger.LogWarning("Postgres not ready yet. Retrying in 2s...");
-            await Task.Delay(2000);
-        }
-    }
-}
+
+
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -84,6 +82,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

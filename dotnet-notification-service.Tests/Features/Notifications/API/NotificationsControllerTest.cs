@@ -1,5 +1,6 @@
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API;
+using dotnet_notification_service.Features.Notifications.API.Controllers;
 using dotnet_notification_service.Features.Notifications.Application;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
 using Funcky.Monads;

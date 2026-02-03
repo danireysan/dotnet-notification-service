@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Auth.Domain.Entities.User;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
@@ -15,8 +16,8 @@ public class UserRepositoryTest : IAsyncLifetime
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:16")
         .Build();
 
-    private UserContext _context;
-    private UserRepository _repository;
+    private UserContext? _context;
+    private UserRepository? _repository;
 
     public async Task InitializeAsync()
     {
@@ -39,6 +40,7 @@ public class UserRepositoryTest : IAsyncLifetime
         //? Arrange
         var user = UserEntity.Stub();
         //? Act
+        Debug.Assert(_repository != null, nameof(_repository) + " != null");
         var result = await _repository.Add(user);
         //? Assert
         result.Switch(
@@ -58,6 +60,7 @@ public class UserRepositoryTest : IAsyncLifetime
         //? Arrange
         var user = UserEntity.Stub();
         //? Act
+        Debug.Assert(_repository != null, nameof(_repository) + " != null");
         await _repository.Add(user);
         var result = await _repository.Add(user);
         //? Assert

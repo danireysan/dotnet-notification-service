@@ -6,6 +6,7 @@ using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObject
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
+using dotnet_notification_service.Features.Notifications.Infra.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(connectionString,
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "users")));
+
+builder.Services.AddDbContext<NotificationContext>(options =>
+    options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("__EFMigrationsHistory", "notifications")));
 
 // Inject Auth Dependencies
 builder.Services.AddScoped<IPasswordHasher<UserId>, PasswordHasher<UserId>>();

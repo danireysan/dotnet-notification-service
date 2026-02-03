@@ -8,5 +8,5 @@ namespace dotnet_notification_service.Features.Notifications.Domain.Repository;
 
 public interface INotificationRepository
 {
-    Task<Either<Failure, Unit>> saveNotification(NotificationEntity command);
+    Task<Either<Failure, Unit>> SaveNotification(NotificationEntity entity);
 }

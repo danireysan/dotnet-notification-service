@@ -1,31 +1,17 @@
 namespace dotnet_notification_service.Core.Domain.Entities;
 
-public class Failure
+// Base record
+public abstract record Failure
 {
     public required string Message { get; init; }
 }
 
-// For 401
-public class UnauthorizedFailure : Failure
-{
-    
-}
+// 401
+public record UnauthorizedFailure : Failure;
 
-// For 422 Error
-public class UnprocessableEntityFailure : Failure
-{
-}
-
-// for 409
-public class ConflictFailure : Failure
-{
-    
-}
-
-
-
+// 422
+public record UnprocessableEntityFailure : Failure;
+// 409
+public record ConflictFailure : Failure;
 // 500
-public class ServerFailure : Failure
-{
-    
-}
+public record ServerFailure : Failure;

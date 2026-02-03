@@ -29,17 +29,15 @@ public class AuthController(ICreateUserUseCase createUserResultUseCase) : Contro
         );
     }
 
-    ActionResult MapFailure(Failure failure) =>
-        failure switch
+    private ActionResult MapFailure(Failure failure)
+    {
+        return failure switch
         {
-            UnauthorizedFailure => Unauthorized(new { error = failure.Message }),
-
-            UnprocessableEntityFailure => UnprocessableEntity(new { error = failure.Message }),
-
-            ConflictFailure => Conflict(new { error = failure.Message }),
-
-            ServerFailure => StatusCode(500, new { error = failure.Message }),
-
-            _ => StatusCode(500, new { error = "An unexpected error occurred: " + failure.Message })
+            UnauthorizedFailure => Unauthorized(new ErrorResponse(failure.Message)),
+            UnprocessableEntityFailure => UnprocessableEntity(new ErrorResponse(failure.Message)),
+            ConflictFailure => Conflict(new ErrorResponse(failure.Message)),
+            ServerFailure => StatusCode(500, new ErrorResponse(failure.Message)),
+            _ => StatusCode(500, new ErrorResponse($"An unexpected error occurred: {failure.Message}"))
         };
+    }
 }

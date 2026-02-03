@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Auth.API.Controllers;
 using dotnet_notification_service.Features.Auth.API.DTOS;
@@ -50,34 +51,47 @@ namespace dotnet_notification_service.Tests.Features.Auth.API
             // what should you assert? that you got the expected HTTP result
 
 
-            var createdResult = Assert.IsType<CreatedResult>(result.Result);
+            var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
             var createdValue = Assert.IsType<CreateUserResponse>(createdResult.Value);
 
             Assert.Equal(expectedResponse.Token, createdValue.Token);
         }
 
 
-        [Fact]
-        public async Task CreateUser_ShouldReturnBadRequest_WhenUseCaseFails()
+        [Theory]
+        [InlineData(typeof(UnauthorizedFailure), 401, typeof(UnauthorizedObjectResult))]
+        [InlineData(typeof(UnprocessableEntityFailure), 422, typeof(UnprocessableEntityObjectResult))]
+        [InlineData(typeof(ConflictFailure), 409, typeof(ConflictObjectResult))]
+        [InlineData(typeof(ServerFailure), 500, typeof(ObjectResult))]
+        public async Task CreateUser_ShouldMapFailuresToCorrectStatusCodes(
+            Type failureType, 
+            int expectedStatusCode, 
+            Type expectedResultType)
         {
             //? Arrange
-            var failure = new Failure
-            {
-                Message = "someError"
+            var failureInstance = (Failure)Activator.CreateInstance(failureType)! with 
+            { 
+                Message = "Domain Error" 
             };
 
-            // perform expected result in UseCase
             MockUseCase
                 .Setup(uc => uc.CallAsync(It.IsAny<CreateUserCommand>()))
-                .ReturnsAsync(Either<Failure, CreateUserResult>.Left(failure));
-            // Use the UseCase in the controller
+                .ReturnsAsync(Either<Failure, CreateUserResult>.Left(failureInstance));
+            
             var controller = new AuthController(MockUseCase.Object);
+
             //? Act
-            var result = await controller.CreateUser(MockCreateUserRequest);
+            var actionResult = await controller.CreateUser(MockCreateUserRequest);
+
             //? Assert
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            var returnedFailure = Assert.IsType<Failure>(badRequestResult.Value);
-            Assert.Equal(failure.Message, returnedFailure.Message);
+
+            Assert.IsType(expectedResultType, actionResult.Result);
+            
+            var objectResult = (ObjectResult)actionResult.Result!;
+            Assert.Equal(expectedStatusCode, objectResult.StatusCode);
+    
+            var response = Assert.IsType<ErrorResponse>(objectResult.Value);
+            Assert.Equal("Domain Error", response.Error);
         }
     }
 }

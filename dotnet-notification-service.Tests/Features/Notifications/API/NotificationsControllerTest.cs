@@ -37,10 +37,11 @@ public class NotificationsControllerTest
     public async Task CreateNotification_ShouldReturnBadRequest_WhenUseCaseFails()
     {
         //? Arrange
-        var failure = new Failure
+        var failure = new ServerFailure
         {
-            Message = "Something went wrong"
+            Message = "Failure"
         };
+        
         _createNotificationUseCase
             .Setup(uc => uc.CallAsync(It.IsAny<CreateNotificationCommand>()))
             .ReturnsAsync(Either<Failure, CreateNotificationResult>.Left(failure));

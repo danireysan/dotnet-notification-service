@@ -1,6 +1,6 @@
-
 using dotnet_notification_service.Features.Auth.Domain.Entities.User;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
+using Funcky;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
@@ -26,10 +26,10 @@ public class UserRepositoryTest : IAsyncLifetime
             .Options;
 
         _context = new UserContext(options);
-        
+
         await _context.Database.EnsureCreatedAsync();
 
-        _repository = new UserRepository();
+        _repository = new UserRepository(_context);
     }
 
     [Fact]
@@ -37,17 +37,27 @@ public class UserRepositoryTest : IAsyncLifetime
     {
         //? Arrange
         var user = UserEntity.Stub();
+
+        var unit = new Unit();
         //? Act
-        var result = _repository.Add(user);
+        var result = await _repository.Add(user);
         //? Assert
+        result.Switch(
+            left: failure => Assert.Fail("Expected user creation "),
+            right: unit2 => { Assert.IsType<Unit>(unit2); }
+        );
+
+        // verify the user is actually saved
+        var dbUser = await _context.Users.FindAsync(user.Id);
+        Assert.NotNull(dbUser);
+        Assert.Equal(user.Id, dbUser.Id);
     }
-    
+
     [Fact]
     public async Task EnsureMailIsUnique_ShouldReturnFailure_WhenEmailAlreadyExists()
     {
-        
     }
-    
+
     public async Task DisposeAsync()
     {
         await _context.DisposeAsync();

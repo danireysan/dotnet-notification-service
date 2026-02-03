@@ -7,15 +7,29 @@ using Funcky.Monads;
 
 namespace dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 
-public class UserRepository : IUserRepository
+public class UserRepository(UserContext context) : IUserRepository
 {
     public Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string email)
     {
         throw new NotImplementedException();
     }
 
-    public Task<Either<Failure, Unit>> Add(UserEntity user)
+    public async Task<Either<Failure, Unit>> Add(UserEntity user)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
+            return Either<Failure, Unit>.Right(new Unit());
+        }
+        catch (Exception e)
+        {
+            var failure = new ServerFailure
+            {
+                Message = "Unable to add user" + e.Message,
+            };
+
+            return Either<Failure, Unit>.Left(failure);
+        }
     }
 }

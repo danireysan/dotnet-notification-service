@@ -58,7 +58,7 @@ public class UserRepository(UserContext context) : IUserRepository
         {
             return Either<Failure, Unit>.Left(new ConflictFailure
             {
-                Message = "It seems that an email address is already registered"
+                Message = $"It seems that this {user.Email.Value} already exists"
             });
         }
         catch (Exception e)

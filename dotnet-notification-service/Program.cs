@@ -1,8 +1,11 @@
+using Asp.Versioning;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
+using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObjects;
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+
+    options.ApiVersionReader = new UrlSegmentApiVersionReader();
+});
+    
 
 
 builder.Services.Configure<JwtOptions>(
@@ -23,6 +36,7 @@ builder.Services.AddDbContext<UserContext>(options =>
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "users")));
 
 
+builder.Services.AddScoped<IPasswordHasher<UserId>, PasswordHasher<UserId>>();
 builder.Services.AddScoped<ICustomPasswordHasher, PasswordHashingService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -30,12 +44,13 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
 var app = builder.Build();
-using (var scope = app.Services.CreateScope())
+if (args.Contains("--migrate"))
 {
+    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     var logger = services.GetRequiredService<ILogger<Program>>();
     var context = services.GetRequiredService<UserContext>();
-    
+
     for (var i = 0; i < 5; i++)
     {
         try
@@ -50,8 +65,9 @@ using (var scope = app.Services.CreateScope())
             if (i == 4) // Last attempt failed
             {
                 logger.LogCritical(ex, "Could not apply migrations after multiple attempts.");
-                throw; 
+                throw;
             }
+
             logger.LogWarning("Postgres not ready yet. Retrying in 2s...");
             await Task.Delay(2000);
         }

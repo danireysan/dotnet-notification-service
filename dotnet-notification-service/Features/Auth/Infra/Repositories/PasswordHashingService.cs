@@ -10,7 +10,7 @@ namespace dotnet_notification_service.Features.Auth.Infra.Repositories;
 
 using EitherHashOrFailure = Either<Failure, PasswordHash>;
 using EitherBoolOrFailure = Either<Failure, bool>;
-public class PasswordHashingService(PasswordHasher<UserId> passwordHasher) : ICustomPasswordHasher
+public class PasswordHashingService(IPasswordHasher<UserId> passwordHasher) : ICustomPasswordHasher
 {
     public Task<EitherHashOrFailure> HashPassword(UserId userId, string password)
     {

@@ -1,4 +1,7 @@
 using dotnet_notification_service.Core.Domain.Entities;
+using dotnet_notification_service.Features.Auth.Application.CreateUserUseCase;
+using dotnet_notification_service.Features.Auth.Domain.Repositories;
+using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +21,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(connectionString,
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "users")));
+
+
+builder.Services.AddScoped<ICustomPasswordHasher, PasswordHashingService>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())

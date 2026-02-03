@@ -1,3 +1,4 @@
+using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Auth.Domain.Entities.User;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 using Funcky;
@@ -37,8 +38,6 @@ public class UserRepositoryTest : IAsyncLifetime
     {
         //? Arrange
         var user = UserEntity.Stub();
-
-        var unit = new Unit();
         //? Act
         var result = await _repository.Add(user);
         //? Assert
@@ -54,8 +53,36 @@ public class UserRepositoryTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateUser_ShouldReturnFailure_WhenEmailAlreadyExists()
+    {
+        //? Arrange
+        var user = UserEntity.Stub();
+        //? Act
+        await _repository.Add(user);
+        var result = await _repository.Add(user);
+        //? Assert
+        result.Switch(
+            left: failure => { Assert.IsType<ConflictFailure>(failure); },
+            right: unit => Assert.Fail("Expected email address already exists")
+        );
+    }
+
+    [Fact]
     public async Task EnsureMailIsUnique_ShouldReturnFailure_WhenEmailAlreadyExists()
     {
+        //? Arrange
+        var user = UserEntity.Stub();
+
+
+        //? Act
+        await _repository.Add(user);
+        var result = await _repository.EnsureMailIsUnique(user.Email.Value);
+
+        //? Assert
+        result.Switch(
+            left: failure => { Assert.IsType<ConflictFailure>(failure); },
+            right: _ => Assert.Fail("Expected email address already exists")
+        );
     }
 
     public async Task DisposeAsync()

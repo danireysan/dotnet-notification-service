@@ -8,6 +8,6 @@ namespace dotnet_notification_service.Features.Auth.Domain.Repositories;
 
 public interface IUserRepository
 {
-    Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string? email);
+    Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string email);
     Task<Either<Failure, Unit>> Add(UserEntity user);
 }

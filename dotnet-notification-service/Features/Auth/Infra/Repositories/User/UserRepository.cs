@@ -4,23 +4,56 @@ using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObject
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using Funcky;
 using Funcky.Monads;
+using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 
 public class UserRepository(UserContext context) : IUserRepository
 {
-    public Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string email)
+    private EmailAddress _getOrElse;
+
+    public async Task<Either<Failure, EmailAddress>> EnsureMailIsUnique(string email)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var mail = EmailAddress.FromPersistence(email);
+            var exists = await context.Users.AnyAsync(
+                e => e.Email == mail
+                );
+            var failure = new ConflictFailure
+            {
+                Message = "It seems that an email address is already registered" ,
+            };
+            if (exists)
+                return Either<Failure, EmailAddress>.Left(failure);
+            
+            return mail;
+        }
+        catch (Exception e)
+        {
+
+            var failure = new ServerFailure
+            {
+                Message = "EnsureMailIsUnique failed because:  " + e.Message, 
+            };
+            return Either<Failure, EmailAddress>.Left(failure);
+        }
     }
 
     public async Task<Either<Failure, Unit>> Add(UserEntity user)
     {
         try
         {
+            var isUnique = await EnsureMailIsUnique(user.Email.Value);
+            var left = isUnique.LeftOrNone().ToNullable();
+            if (left != null)
+                return Either<Failure, Unit>.Left(left);
+            
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
-            return Either<Failure, Unit>.Right(new Unit());
+
+
+            return new Unit();
         }
         catch (Exception e)
         {

@@ -18,7 +18,13 @@ public class NotificationsController(ICreateNotificationUseCase createNotificati
 {
     public async Task<ActionResult> CreateNotification([FromBody] CreateNotificationDto dto)
     {
-        var result = await createNotificationUseCase.CallAsync(dto);
+        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+        if (userId == null)
+            return Unauthorized();
+
+        var command = new CreateNotificationCommand(dto, userId);
+
+        var result = await createNotificationUseCase.CallAsync(command);
         return result.Match(
             failure => FailureMapperExtension.MapFailure(this, failure),
             Ok

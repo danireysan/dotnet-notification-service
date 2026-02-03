@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using dotnet_notification_service.Features.Notifications.Domain.Notification;
+using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 
 namespace dotnet_notification_service.Features.Notifications.API.DTOs;
 

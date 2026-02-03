@@ -4,7 +4,6 @@ using Asp.Versioning;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API.DTOs;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
-using dotnet_notification_service.Features.Notifications.Domain.Notification;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

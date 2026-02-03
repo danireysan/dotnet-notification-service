@@ -78,7 +78,7 @@ public class UserRepositoryTest : IAsyncLifetime
 
 
         //? Act
-        await _repository.Add(user);
+        await _repository!.Add(user);
         var result = await _repository.EnsureMailIsUnique(user.Email.Value);
 
         //? Assert

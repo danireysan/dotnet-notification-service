@@ -6,17 +6,27 @@ using NUlid;
 
 namespace dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
 
-public class CreateNotificationUseCase(INotificationRepository repository, INotificationSender sender)
+public class CreateNotificationUseCase
     : ICreateNotificationUseCase
 {
+    
+    private readonly IReadOnlyDictionary<NotificationChannel, INotificationSender> _senders;
+    private readonly INotificationRepository _repository;
+    
+    public CreateNotificationUseCase(IEnumerable<INotificationSender> senders, INotificationRepository repository)
+    {
+        _senders = senders.ToDictionary(s => s.Channel);
+        _repository = repository;
+    }
+
     public async Task<Either<Failure, CreateNotificationResult>> CallAsync(CreateNotificationCommand @params)
     {
         var ulid = new Ulid();
         var data = @params.Data;
         var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel);
-        var result = await repository.SaveNotification(entity);
+        var result = await _repository.SaveNotification(entity);
 
-
+        
         return from _ in result
             select new CreateNotificationResult();
     }

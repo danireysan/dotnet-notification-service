@@ -11,6 +11,7 @@
 - I created a JwtOptions POCO to keep the JWT configuration in one place and make it easier to change in the future.
 - I did not use a Datasource layer in the auth feature because ASP.NET Core Identity already abstracts the data access layer.
 - I modeled the Notification entity as a record because it is an immutable data structure that represents a notification.
+- I use Testcontainers to create a disposable SQL Server instance for integration tests to ensure that tests are isolated and do not depend on external resources.
 
 ## Know issues
 - The project does not have automatic DI registration so every new service needs to be registered manually

@@ -6,6 +6,8 @@ using dotnet_notification_service.Features.Auth.Domain.Entities.User.ValueObject
 using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
+using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +53,11 @@ builder.Services.AddScoped<ICustomPasswordHasher, PasswordHashingService>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
+
+// Inject Notification Dependencies
+builder.Services.AddScoped<INotificationSender, EmailSender>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ICreateNotificationUseCase, CreateNotificationUseCase>();
 
 // JWT config
 builder.Services.AddAuthorization();

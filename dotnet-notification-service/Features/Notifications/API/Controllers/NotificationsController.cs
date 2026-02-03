@@ -15,11 +15,20 @@ namespace dotnet_notification_service.Features.Notifications.API.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class NotificationsController(ICreateNotificationUseCase createNotificationUseCase) : ControllerBase
 {
+    
+    [HttpPost]
     public async Task<ActionResult> CreateNotification([FromBody] CreateNotificationDto dto)
     {
-        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        // Extracting the User ID (Subject)
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub")?.Value; 
+        
+        var email = User.FindFirstValue(ClaimTypes.Email);
+        
         if (userId == null)
-            return Unauthorized();
+            return Unauthorized(
+                "User if is not authenticated userId:"+ userId + email
+                );
 
         var command = new CreateNotificationCommand(dto, userId);
 

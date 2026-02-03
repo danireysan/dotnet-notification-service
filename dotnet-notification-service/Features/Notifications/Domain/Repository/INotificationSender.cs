@@ -8,5 +8,7 @@ namespace dotnet_notification_service.Features.Notifications.Domain.Repository;
 
 public interface INotificationSender
 {
+    NotificationChannel Channel { get; }
+
     Task<Either<Failure, Unit>> Send(NotificationEntity dto);
 }

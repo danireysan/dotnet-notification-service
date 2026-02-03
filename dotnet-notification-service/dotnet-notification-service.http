@@ -1,4 +1,5 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzAxNTkwMzMsInN1YiI6IjAxS0dKU0ZNUEg1SDI3Ulg3UFREWENaUURKIiwiZW1haWwiOiJkYW5pZWw0QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiaWF0IjoxNzcwMTU3MjMzLCJuYmYiOjE3NzAxNTcyMzN9.oVgXtScbxVTe7ECTszvt_MNDOdA9jvzRQWmhpIkujEo
 
 GET {{dotnet_notification_service_HostAddress}}/weatherforecast/
 Accept: application/json
@@ -8,6 +9,18 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel1@test.com",
+    "Email": "daniel6@test.com",
     "Password": "Daniel"
+}
+
+### Post new notification (include Authorization header)
+POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{   
+    "type": "email",
+    "Title": "Test Notification",
+    "Content": "This is a test notification message.",
+    "Email": "asdfasdfasdf"
 }

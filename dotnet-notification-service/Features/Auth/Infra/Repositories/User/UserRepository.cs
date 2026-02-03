@@ -52,17 +52,21 @@ public class UserRepository(UserContext context) : IUserRepository
             await context.Users.AddAsync(user);
             await context.SaveChangesAsync();
 
-
             return new Unit();
+        }
+        catch (DbUpdateException ex) when (ex.InnerException is Npgsql.PostgresException { SqlState: "23505" })
+        {
+            return Either<Failure, Unit>.Left(new ConflictFailure
+            {
+                Message = "It seems that an email address is already registered"
+            });
         }
         catch (Exception e)
         {
-            var failure = new ServerFailure
+            return Either<Failure, Unit>.Left(new ServerFailure
             {
-                Message = "Unable to add user" + e.Message,
-            };
-
-            return Either<Failure, Unit>.Left(failure);
+                Message = "Unable to add user: " + e.Message,
+            });
         }
     }
 }

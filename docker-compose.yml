@@ -1,13 +1,29 @@
 services:
   postgres:
     image: postgres:16
+    container_name: notification-db
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      POSTGRES_DB: ${POSTGRES_DB:-notification_db}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-notification_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
   dotnet-notification-service:
     build:
+
       context: ./dotnet-notification-service
       dockerfile: ../Dockerfile
     ports:
       - "5143:5143"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB:-notification_db};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-password123}
+    depends_on:
+      postgres:
+        condition: service_healthy # The app won't start until Postgres is ready
+  

@@ -19,8 +19,34 @@ builder.Services.AddDbContext<UserContext>(options =>
     options.UseNpgsql(connectionString,
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "users")));
 
-
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    var context = services.GetRequiredService<UserContext>();
+    
+    for (var i = 0; i < 5; i++)
+    {
+        try
+        {
+            logger.LogInformation("Attempting to apply migrations (Attempt {Attempt})...", i + 1);
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+            break; // Success!
+        }
+        catch (Exception ex)
+        {
+            if (i == 4) // Last attempt failed
+            {
+                logger.LogCritical(ex, "Could not apply migrations after multiple attempts.");
+                throw; 
+            }
+            logger.LogWarning("Postgres not ready yet. Retrying in 2s...");
+            await Task.Delay(2000);
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

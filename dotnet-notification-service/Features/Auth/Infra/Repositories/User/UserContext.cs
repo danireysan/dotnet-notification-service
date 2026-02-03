@@ -13,6 +13,7 @@ public class UserContext(DbContextOptions<UserContext> options) : DbContext(opti
     {   
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasDefaultSchema("users");
+        
         modelBuilder.Entity<UserEntity>(builder =>
         {
             builder.ToTable("users");

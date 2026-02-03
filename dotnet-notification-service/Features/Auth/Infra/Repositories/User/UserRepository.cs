@@ -22,7 +22,7 @@ public class UserRepository(UserContext context) : IUserRepository
                 );
             var failure = new ConflictFailure
             {
-                Message = "It seems that an email address is already registered" ,
+                Message = $"It seems that {email} already exists"
             };
             if (exists)
                 return Either<Failure, EmailAddress>.Left(failure);

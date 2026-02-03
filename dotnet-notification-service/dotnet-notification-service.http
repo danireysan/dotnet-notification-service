@@ -3,4 +3,11 @@
 GET {{dotnet_notification_service_HostAddress}}/weatherforecast/
 Accept: application/json
 
-###
+### Create new user
+POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
+Content-Type: application/json
+
+{
+    "Email": "daniel@test.com",
+    "Password": "Test@1234"
+}

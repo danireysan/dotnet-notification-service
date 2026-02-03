@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_notification_service.Features.Auth.API.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
 [ApiVersion(1)]
+[Route("api/v{version:apiVersion}/[controller]")]
 public class AuthController(ICreateUserUseCase createUserResultUseCase) : ControllerBase
 {
     [HttpPost]

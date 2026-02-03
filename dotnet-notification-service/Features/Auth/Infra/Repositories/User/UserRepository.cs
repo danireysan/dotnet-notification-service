@@ -5,7 +5,7 @@ using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using Funcky;
 using Funcky.Monads;
 
-namespace dotnet_notification_service.Features.Auth.Infra.Repositories;
+namespace dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 
 public class UserRepository : IUserRepository
 {

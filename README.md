@@ -9,6 +9,7 @@
 - The project stores user Ids as ULID so we can have faster indexes
 - I chose ASP.NET Core Identity with token auth to keep the project self-contained and easy to run for reviewers. In a production system, this could be replaced with an external identity provider such as Microsoft Entra ID.
 - I created a JwtOptions POCO to keep the JWT configuration in one place and make it easier to change in the future.
+- I did not use a Datasource layer in the auth feature because ASP.NET Core Identity already abstracts the data access layer.
 
 ## Know issues
 - The project does not have automatic DI registration so every new service needs to be registered manually

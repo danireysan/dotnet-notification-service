@@ -24,20 +24,10 @@ public class AuthController(ICreateUserUseCase createUserResultUseCase) : Contro
         var result = await createUserResultUseCase.CallAsync(command);
 
         return result.Match<ActionResult<CreateUserResponse>>(
-            failure => MapFailure(failure),
+            failure => FailureMapperExtension.MapFailure(this, failure),
             success => CreatedAtAction(nameof(CreateUser), new CreateUserResponse(success.Token))
         );
     }
 
-    private ActionResult MapFailure(Failure failure)
-    {
-        return failure switch
-        {
-            UnauthorizedFailure => Unauthorized(new ErrorResponse(failure.Message)),
-            UnprocessableEntityFailure => UnprocessableEntity(new ErrorResponse(failure.Message)),
-            ConflictFailure => Conflict(new ErrorResponse(failure.Message)),
-            ServerFailure => StatusCode(500, new ErrorResponse(failure.Message)),
-            _ => StatusCode(500, new ErrorResponse($"An unexpected error occurred: {failure.Message}"))
-        };
-    }
+    
 }

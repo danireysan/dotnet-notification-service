@@ -8,6 +8,6 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel@test.com",
-    "Password": "Test@1234"
+    "Email": "daniel1@test.com",
+    "FirstName": "Daniel"
 }

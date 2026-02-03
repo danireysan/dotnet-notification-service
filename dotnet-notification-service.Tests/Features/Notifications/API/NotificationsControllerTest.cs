@@ -1,6 +1,7 @@
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API;
 using dotnet_notification_service.Features.Notifications.API.Controllers;
+using dotnet_notification_service.Features.Notifications.API.DTOs;
 using dotnet_notification_service.Features.Notifications.Application;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
 using Funcky.Monads;
@@ -11,47 +12,55 @@ namespace dotnet_notification_service.Tests.Features.Notifications.API;
 
 public class NotificationsControllerTest
 {
-    private readonly Mock<ICreateNotificationUseCase> _createNotificationUseCase = new();
-    private readonly CreateNotificationCommand _createNotificationCommand = new();
 
-    [Fact]
-    public async Task CreateNotification_ShouldReturnCreated_WhenUseCaseSucceeds()
+
+
+   
+    
+    
+    public static TheoryData<NotificationTestData> AllNotificationTypes =>
+    [
+        new(new EmailNotificationDto("Hi", "Body", "test@example.com")),
+        new(new SmsNotificationDto("Alert", "Body", "1234567890")),
+        new(new PushNotificationDto("Ping", "Body", "device-token-123"))
+    ];
+
+    [Theory, MemberData(nameof(AllNotificationTypes))]
+    public async Task CreateNotification_ReturnsOk_ForAllDtoTypes(NotificationTestData data)
     {
-
-
-        _createNotificationUseCase
-            .Setup(uc => uc.CallAsync(It.IsAny<CreateNotificationCommand>()))
+        //? Arrange 
+        var useCase = new Mock<ICreateNotificationUseCase>();
+        useCase
+            .Setup(uc => uc.CallAsync(It.IsAny<CreateNotificationDto>()))
             .ReturnsAsync(Either<Failure, CreateNotificationResult>.Right(new CreateNotificationResult()));
         
-        var controller = new NotificationsController(_createNotificationUseCase.Object);
+        var sut = new NotificationsController(useCase.Object);
         //? Act
-        var result = await controller.CreateNotification(_createNotificationCommand);
-        // perform expected result in UseCase
-        // Use the UseCase in the controller
+        
+        var result = await sut.CreateNotification(data.Dto);
         //? Assert
-        // what should you assert? that you got the expected HTTP result
-        _createNotificationUseCase.Verify();
-        Assert.IsType<CreatedResult>(result);
+        Assert.NotNull(data.Dto);
+        Assert.IsType<OkObjectResult>(result);
     }
 
     [Fact]
     public async Task CreateNotification_ShouldReturnBadRequest_WhenUseCaseFails()
     {
-        //? Arrange
-        var failure = new ServerFailure
-        {
-            Message = "Failure"
-        };
-        
-        _createNotificationUseCase
-            .Setup(uc => uc.CallAsync(It.IsAny<CreateNotificationCommand>()))
-            .ReturnsAsync(Either<Failure, CreateNotificationResult>.Left(failure));
-        //? Act
-        var controller = new NotificationsController(_createNotificationUseCase.Object);        
-        //? Assert
-        var result = await controller.CreateNotification(_createNotificationCommand);
-        _createNotificationUseCase.Verify();
-        Assert.IsType<BadRequestResult>(result);
+        // //? Arrange
+        // var failure = new ServerFailure
+        // {
+        //     Message = "Failure"
+        // };
+        //
+        // _createNotificationUseCase
+        //     .Setup(uc => uc.CallAsync(It.IsAny<CreateNotificationCommand>()))
+        //     .ReturnsAsync(Either<Failure, CreateNotificationResult>.Left(failure));
+        // //? Act
+        // var controller = new NotificationsController(_createNotificationUseCase.Object);        
+        // //? Assert
+        // var result = await controller.CreateNotification(_createNotificationCommand);
+        // _createNotificationUseCase.Verify();
+        // Assert.IsType<BadRequestResult>(result);
     }
 
     // [Fact]

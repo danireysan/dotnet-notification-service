@@ -1,0 +1,3 @@
+namespace dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
+
+public record GetNotificationsResult();

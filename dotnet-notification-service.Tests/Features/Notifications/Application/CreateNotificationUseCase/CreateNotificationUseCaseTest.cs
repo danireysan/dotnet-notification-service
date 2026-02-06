@@ -19,13 +19,19 @@ public class CreateNotificationUseCaseTest
     private readonly Mock<INotificationRepository> _repository;
     private readonly Mock<INotificationSender> _sender;
     private readonly NotificationEntity _notification;
+    private readonly List<INotificationSender> _senders;
 
     public CreateNotificationUseCaseTest()
     {
         _repository = new Mock<INotificationRepository>();
         _sender = new Mock<INotificationSender>();
+        _senders =
+        [
+            _sender.Object
+        ];
         var ulid = new Ulid();
-        _notification = new NotificationEntity(ulid,"Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push);
+        _notification =
+            new NotificationEntity(ulid, "Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push);
     }
 
     [Fact]
@@ -41,9 +47,12 @@ public class CreateNotificationUseCaseTest
             .Setup(repo => repo.SaveNotification(It.IsAny<NotificationEntity>()))
             .ReturnsAsync(Either<Failure, Unit>.Left(failure));
 
-        var sut = new Uc.CreateNotificationUseCase(_repository.Object, _sender.Object);
+        
 
-        var command = new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
+        var sut = new Uc.CreateNotificationUseCase(_senders, _repository.Object);
+
+        var command =
+            new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
 
         // Act
         var result = await sut.CallAsync(command);
@@ -63,9 +72,10 @@ public class CreateNotificationUseCaseTest
             .Setup(repo => repo.SaveNotification(It.IsAny<NotificationEntity>()))
             .ReturnsAsync(Either<Failure, Unit>.Right(new Unit()));
 
-        var sut = new Uc.CreateNotificationUseCase(_repository.Object, _sender.Object);
+        var sut = new Uc.CreateNotificationUseCase(_senders, _repository.Object);
 
-        var command = new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
+        var command =
+            new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
 
         // Act
         var result = await sut.CallAsync(command);
@@ -73,7 +83,7 @@ public class CreateNotificationUseCaseTest
         // Assert
         result.Switch(
             left => Assert.Fail("Expected created notification"),
-            right: created => Assert.NotNull(created)
+            right: Assert.NotNull
         );
     }
 }

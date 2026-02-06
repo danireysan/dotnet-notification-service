@@ -1,5 +1,5 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
-@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzAxNTkwMzMsInN1YiI6IjAxS0dKU0ZNUEg1SDI3Ulg3UFREWENaUURKIiwiZW1haWwiOiJkYW5pZWw0QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiaWF0IjoxNzcwMTU3MjMzLCJuYmYiOjE3NzAxNTcyMzN9.oVgXtScbxVTe7ECTszvt_MNDOdA9jvzRQWmhpIkujEo
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzAxNjE0MjIsInN1YiI6IjAxS0dKVlJKMlY4TVdNUlNGREFUTTQ0S0JGIiwiZW1haWwiOiJkYW5pZWw3QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiaWF0IjoxNzcwMTU5NjIyLCJuYmYiOjE3NzAxNTk2MjJ9.E6lYAYy6MQHteztfjkOTvOuaGoDT-C6-PujSaeWNzGo
 
 GET {{dotnet_notification_service_HostAddress}}/weatherforecast/
 Accept: application/json
@@ -9,7 +9,7 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel6@test.com",
+    "Email": "daniel7@test.com",
     "Password": "Daniel"
 }
 

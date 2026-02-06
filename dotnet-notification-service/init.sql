@@ -32,3 +32,4 @@ VALUES ('20260203055934_InitialUserCreate', '10.0.2');
 
 COMMIT;
 
+No project was found. Change the current working directory or use the --project option.

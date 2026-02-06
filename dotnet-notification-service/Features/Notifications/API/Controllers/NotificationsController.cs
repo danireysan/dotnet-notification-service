@@ -4,6 +4,7 @@ using Asp.Versioning;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API.DTOs;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,7 +14,9 @@ namespace dotnet_notification_service.Features.Notifications.API.Controllers;
 [ApiController]
 [ApiVersion(1)]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class NotificationsController(ICreateNotificationUseCase createNotificationUseCase) : ControllerBase
+public class NotificationsController(
+    ICreateNotificationUseCase createNotificationUseCase,
+    IUpdateNotificationUseCase updateNotificationUseCase) : ControllerBase
 {
     
     [HttpPost]
@@ -37,5 +40,11 @@ public class NotificationsController(ICreateNotificationUseCase createNotificati
             failure => FailureMapperExtension.MapFailure(this, failure),
             Ok
         );
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateNotification([FromBody] CreateNotificationDto dto)
+    {
+        return Ok();
     }
 }

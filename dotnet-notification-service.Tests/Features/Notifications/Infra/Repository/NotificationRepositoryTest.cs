@@ -1,4 +1,3 @@
-using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
 using Funcky;

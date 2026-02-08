@@ -50,6 +50,19 @@ public class NotificationsController(
     [HttpPut]
     public async Task<ActionResult> UpdateNotification([FromBody] NotificationDto dto)
     {
-        return Ok();
+        throw  new NotImplementedException();
     }
+
+    [HttpGet]
+    public async Task<ActionResult> GetNotifications()
+    {
+        throw   new NotImplementedException();
+    }
+
+    [HttpDelete("id")]
+    public async Task<ActionResult> DeleteNotification(int id)
+    {
+        throw  new NotImplementedException();
+    }
+    
 }

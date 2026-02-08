@@ -3,7 +3,7 @@ using dotnet_notification_service.Features.Notifications.Domain.Entities.Notific
 
 namespace dotnet_notification_service.Features.Notifications.API.DTOs;
 
-[JsonPolymorphic(TypeDiscriminatorPropertyName = "type")]
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "Type")]
 [JsonDerivedType(typeof(EmailNotificationDto), "email")]
 [JsonDerivedType(typeof(SmsNotificationDto), "sms")]
 [JsonDerivedType(typeof(PushNotificationDto), "push")]
@@ -14,6 +14,11 @@ public abstract record NotificationDto(
 )
 {
     public abstract NotificationChannel Channel { get; }
+
+    bool isValid(NotificationChannel channel)
+    {
+        return Title.Length != 0 && Content.Length != 0 && Recipient.Length != 0;
+    }
 };
 
 public record EmailNotificationDto(string Title, string Content, string Email)

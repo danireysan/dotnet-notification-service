@@ -7,7 +7,7 @@ namespace dotnet_notification_service.Features.Notifications.API.DTOs;
 [JsonDerivedType(typeof(EmailNotificationDto), "email")]
 [JsonDerivedType(typeof(SmsNotificationDto), "sms")]
 [JsonDerivedType(typeof(PushNotificationDto), "push")]
-public abstract record CreateNotificationDto(
+public abstract record NotificationDto(
     string Title,
     string Content,
     string Recipient
@@ -17,7 +17,7 @@ public abstract record CreateNotificationDto(
 };
 
 public record EmailNotificationDto(string Title, string Content, string Email)
-    : CreateNotificationDto(Title, Content, Email)
+    : NotificationDto(Title, Content, Email)
 {
     public override NotificationChannel Channel => NotificationChannel.Email;
 }
@@ -26,7 +26,7 @@ public record SmsNotificationDto(
     string Title,
     string Content,
     string Phone
-) : CreateNotificationDto(Title, Content, Phone)
+) : NotificationDto(Title, Content, Phone)
 {
     public override NotificationChannel Channel => NotificationChannel.Sms;
 }
@@ -35,7 +35,7 @@ public record PushNotificationDto(
     string Title,
     string Content,
     string DeviceId
-) : CreateNotificationDto(Title, Content, DeviceId)
+) : NotificationDto(Title, Content, DeviceId)
 {
     public override NotificationChannel Channel => NotificationChannel.Push;
 }

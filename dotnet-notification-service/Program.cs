@@ -7,6 +7,7 @@ using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -58,6 +59,7 @@ builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 builder.Services.AddScoped<INotificationSender, EmailSender>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICreateNotificationUseCase, CreateNotificationUseCase>();
+builder.Services.AddScoped<IUpdateNotificationUseCase, UpdateNotificationUseCase>();
 
 // JWT config
 builder.Services.AddAuthorization();
@@ -75,8 +77,8 @@ builder.Services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.Authenticatio
     {
         ClockSkew =  TimeSpan.Zero,
         ValidIssuer = jwtSettings!.Issuer,
-        ValidAudience = jwtSettings!.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings!.Key))
+        ValidAudience = jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
     };
 });
 

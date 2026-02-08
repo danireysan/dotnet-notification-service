@@ -15,7 +15,6 @@
 - I did not use a Datasource layer in the auth feature because ASP.NET Core Identity already abstracts the data access layer.
 - I modeled the Notification entity as a record because it is an immutable data structure that represents a notification.
 
-
 ### Testing
 - I used the Arrange-Act-Assert pattern in tests to improve readability and maintainability by clearly separating the setup, execution, and verification phases of each test case.
 - I used Testcontainers to create a disposable SQL Server instance for integration tests to ensure that tests are isolated and do not depend on external resources.
@@ -24,6 +23,7 @@
 
 
 ## Known issues
+- Changing the hashing algorithm is not as striaghforward as changing the implementation of IPasswordHasher, it requires a migration to update old passwords to the new format.
 - The project does not have automatic DI registration so every new service needs to be registered manually
 - Tests could use some refactoring to reduce duplication and improve readability
 - The Programs.cs file is a bit long because of all the service registrations and middleware configurations, it could be split into extension methods for better readability.

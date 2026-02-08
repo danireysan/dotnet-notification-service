@@ -20,7 +20,6 @@ public class NotificationRepository(NotificationContext context) : INotification
         }
         catch (Exception e)
         {
-            // Extract the most specific error message available
             var detailedMessage = e.InnerException?.Message ?? e.Message;
 
             var failure = new ServerFailure
@@ -92,5 +91,12 @@ public class NotificationRepository(NotificationContext context) : INotification
             };
             return Either<Failure, List<NotificationEntity>>.Left(failure);
         }
+    }
+
+    public async Task<Option<bool>> VerifyNotificationIsFromUser(string notificationId, string userid)
+    {
+        var notification = await context.Notifications.FindAsync(notificationId);
+        
+        return notification != null ? notification.CreatedBy == userid : Option<bool>.None;
     }
 }

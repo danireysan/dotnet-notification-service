@@ -32,4 +32,39 @@ VALUES ('20260203055934_InitialUserCreate', '10.0.2');
 
 COMMIT;
 
-No project was found. Change the current working directory or use the --project option.
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'notifications') THEN
+        CREATE SCHEMA notifications;
+    END IF;
+END $EF$;
+CREATE TABLE IF NOT EXISTS notifications."__EFMigrationsHistory" (
+    "MigrationId" character varying(150) NOT NULL,
+    "ProductVersion" character varying(32) NOT NULL,
+    CONSTRAINT "PK___EFMigrationsHistory" PRIMARY KEY ("MigrationId")
+);
+
+START TRANSACTION;
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM pg_namespace WHERE nspname = 'notifications') THEN
+        CREATE SCHEMA notifications;
+    END IF;
+END $EF$;
+
+CREATE TABLE notifications."Notifications" (
+    "NotificationId" text NOT NULL,
+    "Title" text NOT NULL,
+    "Content" text NOT NULL,
+    "Recipient" text NOT NULL,
+    "CreatedBy" text NOT NULL,
+    "Channel" text NOT NULL,
+    CONSTRAINT "PK_Notifications" PRIMARY KEY ("NotificationId")
+);
+
+INSERT INTO notifications."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+VALUES ('20260203210706_InitialNotificationCreate', '10.0.2');
+
+COMMIT;
+
+

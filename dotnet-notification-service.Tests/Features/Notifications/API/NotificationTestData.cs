@@ -6,12 +6,12 @@ namespace dotnet_notification_service.Tests.Features.Notifications.API;
 
 public class NotificationTestData : IXunitSerializable
 {
-    public CreateNotificationDto Dto { get; set; } = null!;
+    public NotificationDto Dto { get; set; } = null!;
 
     // Required for xUnit
     public NotificationTestData() { } 
 
-    public NotificationTestData(CreateNotificationDto dto) => Dto = dto;
+    public NotificationTestData(NotificationDto dto) => Dto = dto;
 
     public void Serialize(IXunitSerializationInfo info)
     {
@@ -23,7 +23,7 @@ public class NotificationTestData : IXunitSerializable
     public void Deserialize(IXunitSerializationInfo info)
     {
         var json = info.GetValue<string>("json");
-        Dto = JsonSerializer.Deserialize<CreateNotificationDto>(json) ?? throw new InvalidOperationException();
+        Dto = JsonSerializer.Deserialize<NotificationDto>(json) ?? throw new InvalidOperationException();
     }
 
     // Override ToString so the Test Explorer shows a nice name

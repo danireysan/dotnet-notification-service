@@ -16,17 +16,22 @@ namespace dotnet_notification_service.Features.Notifications.API.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class NotificationsController(
     ICreateNotificationUseCase createNotificationUseCase,
-    IUpdateNotificationUseCase updateNotificationUseCase) : ControllerBase
+    IUpdateNotificationUseCase updateNotificationUseCase,
+    ILogger<NotificationsController> logger
+    ) : ControllerBase
 {
     
     [HttpPost]
-    public async Task<ActionResult> CreateNotification([FromBody] CreateNotificationDto dto)
+    public async Task<ActionResult> CreateNotification([FromBody] NotificationDto dto)
     {
 
         // Extracting the User ID (Subject)
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirst("sub")?.Value; 
         
         var email = User.FindFirstValue(ClaimTypes.Email);
+        
+        logger.LogDebug($"This is the mail{email} and this is the userId: {userId}");
+        
         
         if (userId == null)
             return Unauthorized(
@@ -43,7 +48,7 @@ public class NotificationsController(
     }
 
     [HttpPut]
-    public async Task<ActionResult> UpdateNotification([FromBody] CreateNotificationDto dto)
+    public async Task<ActionResult> UpdateNotification([FromBody] NotificationDto dto)
     {
         return Ok();
     }

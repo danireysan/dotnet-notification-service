@@ -21,7 +21,7 @@ public class CreateNotificationUseCase
 
     public async Task<Either<Failure, CreateNotificationResult>> CallAsync(CreateNotificationCommand @params)
     {
-        var ulid = new Ulid();
+        var ulid = Ulid.NewUlid();
         var data = @params.Data;
         var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel);
         var result = await _repository.SaveNotification(entity);

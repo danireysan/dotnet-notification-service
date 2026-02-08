@@ -13,4 +13,6 @@ public interface INotificationRepository
     Task<Either<Failure, Unit>> DeleteNotification(String id);
     Task<Either<Failure, Unit>> UpdateNotification(NotificationEntity entity);
     Task<Either<Failure, List<NotificationEntity>>> GetUserNotifications(string userid);
+    
+    Task<Option<bool>> VerifyNotificationIsFromUser(string notificationId, string userid);
 }

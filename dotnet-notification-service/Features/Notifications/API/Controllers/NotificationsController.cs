@@ -87,15 +87,5 @@ public class NotificationsController(
             right: _ => NoContent()
         );
     }
-
-    private Either<Failure, String> GetUserId()
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var failure = new UnauthorizedFailure
-        {
-            Message = "You are not authenticated"
-        };
-        if (userId == null) return Either<Failure, String>.Left(failure);
-        return userId;
-    }
+    
 }

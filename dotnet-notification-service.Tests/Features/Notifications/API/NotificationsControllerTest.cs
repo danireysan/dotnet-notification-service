@@ -1,6 +1,9 @@
 using dotnet_notification_service.Features.Notifications.API.Controllers;
 using dotnet_notification_service.Features.Notifications.API.DTOs;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.DeleteNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.GetNotificationsFromUserUseCase;
+using dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
@@ -28,12 +31,9 @@ public class NotificationsControllerTest : IAsyncLifetime
     private NotificationRepository? _repository;
     private ICreateNotificationUseCase _createUseCase;
     private IUpdateNotificationUseCase _updateNotification;
+    private IGetNotificationsUseCase _getNotificationsUseCase;
+    private IDeleteNotificationsUseCase _deleteNotificationUseCase;
     private NotificationsController _sut;
-    
-    
-    
-    
-    
     public async Task InitializeAsync()
     {
         var ulid = Ulid.NewUlid();
@@ -53,9 +53,11 @@ public class NotificationsControllerTest : IAsyncLifetime
         _repository = new NotificationRepository(_context);
         var emailSender = new EmailSender();
         _createUseCase = new CreateNotificationUseCase([emailSender], _repository);
-        _updateNotification = new UpdateNotificationUseCase();
+        _updateNotification = new UpdateNotificationUseCase(_repository);
+        _deleteNotificationUseCase = new DeleteNotificationsUseCase(_repository);
+        _getNotificationsUseCase = new GetNotificationsUseCase(_repository);
 
-        _sut = new NotificationsController(_createUseCase, _updateNotification, _logger);
+        _sut = new NotificationsController(_createUseCase, _updateNotification, _deleteNotificationUseCase, _getNotificationsUseCase, _logger);
     }
     // --- 1. POST /CreateNotification ---
     [Fact]
@@ -68,7 +70,7 @@ public class NotificationsControllerTest : IAsyncLifetime
         };
 
 
-        var dto = new EmailNotificationDto("Hi", "Body", "test@example.com");
+        var dto = new EmailNotificationDto(null,"Hi", "Body", "test@example.com");
 
         //? Act
         var createResult = await _sut.CreateNotification(dto);

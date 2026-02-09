@@ -7,6 +7,9 @@ using dotnet_notification_service.Features.Auth.Domain.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories;
 using dotnet_notification_service.Features.Auth.Infra.Repositories.User;
 using dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.DeleteNotificationUseCase;
+using dotnet_notification_service.Features.Notifications.Application.GetNotificationsFromUserUseCase;
+using dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
@@ -16,6 +19,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(
+    options => options.IncludeScopes = true);
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -60,6 +69,8 @@ builder.Services.AddScoped<INotificationSender, EmailSender>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICreateNotificationUseCase, CreateNotificationUseCase>();
 builder.Services.AddScoped<IUpdateNotificationUseCase, UpdateNotificationUseCase>();
+builder.Services.AddScoped<IDeleteNotificationsUseCase, DeleteNotificationsUseCase>();
+builder.Services.AddScoped<IGetNotificationsUseCase, GetNotificationsUseCase>();
 
 // JWT config
 builder.Services.AddAuthorization();

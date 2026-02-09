@@ -1,6 +1,3 @@
 namespace dotnet_notification_service.Features.Notifications.Application.DeleteNotificationUseCase;
 
-public class DeleteNotificationsCommand
-{
-    
-}
+public record DeleteNotificationCommand(string userId, string notificationId);

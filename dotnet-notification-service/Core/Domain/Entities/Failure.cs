@@ -9,6 +9,12 @@ public abstract record Failure
 // 401
 public record UnauthorizedFailure : Failure;
 
+// 403
+public record ForbiddenFailure : Failure;
+
+// 404
+public record NotFoundFailure : Failure;
+
 // 422
 public record UnprocessableEntityFailure : Failure;
 // 409

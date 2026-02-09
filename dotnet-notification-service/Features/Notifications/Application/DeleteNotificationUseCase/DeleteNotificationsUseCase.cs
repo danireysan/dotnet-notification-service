@@ -1,12 +1,22 @@
 using dotnet_notification_service.Core.Domain.Entities;
+using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using Funcky.Monads;
 
 namespace dotnet_notification_service.Features.Notifications.Application.DeleteNotificationUseCase;
 
-public class DeleteNotificationsUseCase : IDeleteNotificationsUseCase
+using EitherDelete = Either<Failure, DeleteNotificationsResult>;
+
+public class DeleteNotificationsUseCase(INotificationRepository repository) : IDeleteNotificationsUseCase
 {
-    public Task<Either<Failure, DeleteNotificationsResult>> CallAsync(DeleteNotificationsCommand @params)
+    public async Task<EitherDelete> CallAsync(DeleteNotificationCommand @params)
     {
-        throw new NotImplementedException();
+        var getNotificationResult = (await repository.GetNotificationById(@params.notificationId));
+        
+        var result = await repository.DeleteNotification(@params.notificationId);
+        return 
+            from notification in getNotificationResult
+            from isUserNotification in repository.IsNotificationFromUser(notification, @params.userId)
+            from _ in result
+            select new DeleteNotificationsResult();
     }
 }

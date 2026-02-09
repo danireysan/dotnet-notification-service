@@ -10,9 +10,11 @@ namespace dotnet_notification_service.Features.Notifications.Domain.Repository;
 public interface INotificationRepository
 {
     Task<Either<Failure, Unit>> SaveNotification(NotificationEntity entity);
-    Task<Either<Failure, Unit>> DeleteNotification(String id);
+    Task<Either<Failure, Unit>> DeleteNotification(string id);
     Task<Either<Failure, Unit>> UpdateNotification(NotificationEntity entity);
     Task<Either<Failure, List<NotificationEntity>>> GetUserNotifications(string userid);
     
-    Task<Option<bool>> VerifyNotificationIsFromUser(string notificationId, string userid);
+    Task<Either<Failure, NotificationEntity>> GetNotificationById(string id);
+    
+    Either<Failure, Unit> IsNotificationFromUser(NotificationEntity entity,  string userId);
 }

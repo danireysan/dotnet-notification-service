@@ -4,6 +4,7 @@ using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using Funcky;
 using Funcky.Monads;
 using Microsoft.EntityFrameworkCore;
+using NUlid;
 
 namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
 
@@ -93,10 +94,27 @@ public class NotificationRepository(NotificationContext context) : INotification
         }
     }
 
-    public async Task<Option<bool>> VerifyNotificationIsFromUser(string notificationId, string userid)
+    public async Task<Either<Failure, NotificationEntity>> GetNotificationById(string id)
     {
-        var notification = await context.Notifications.FindAsync(notificationId);
-        
-        return notification != null ? notification.CreatedBy == userid : Option<bool>.None;
+        var failure = new NotFoundFailure { Message = "This notification doesn't exist." };
+        if (!Ulid.TryParse(id, out var ulid))
+        {
+            return Either<Failure, NotificationEntity>.Left(failure);
+        }
+
+
+        var notification = await context.Notifications.AsNoTracking()
+            .FirstOrDefaultAsync(n => n.NotificationId == ulid);
+
+        return notification ?? Either<Failure, NotificationEntity>.Left(failure);
+    }
+
+    public Either<Failure, Unit> IsNotificationFromUser(NotificationEntity entity, string userId)
+    {
+        var forbiddenFailure = new ForbiddenFailure
+        {
+            Message = "This notification is not yours."
+        };
+        return entity.CreatedBy == userId ? new Unit() : Either<Failure, Unit>.Left(forbiddenFailure);
     }
 }

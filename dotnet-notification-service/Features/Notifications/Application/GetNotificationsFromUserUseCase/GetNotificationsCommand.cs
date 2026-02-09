@@ -1,3 +1,3 @@
 namespace dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
 
-public record GetNotificationsCommand();
+public record GetNotificationsCommand(string userId);

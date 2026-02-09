@@ -1,3 +1,6 @@
-namespace dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
+using dotnet_notification_service.Features.Notifications.API.DTOs;
+using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 
-public record GetNotificationsResult();
+namespace dotnet_notification_service.Features.Notifications.Application.GetNotificationsFromUserUseCase;
+
+public record GetNotificationsResult(List<ResultNotificationDto> notifications);

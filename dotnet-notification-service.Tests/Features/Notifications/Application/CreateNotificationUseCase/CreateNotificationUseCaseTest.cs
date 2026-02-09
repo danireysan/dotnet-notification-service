@@ -52,7 +52,7 @@ public class CreateNotificationUseCaseTest
         var sut = new Uc.CreateNotificationUseCase(_senders, _repository.Object);
 
         var command =
-            new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
+            new CreateNotificationCommand(new EmailNotificationDto(null,"Title", "Content", "test@example.com"), "someId");
 
         // Act
         var result = await sut.CallAsync(command);
@@ -75,7 +75,7 @@ public class CreateNotificationUseCaseTest
         var sut = new Uc.CreateNotificationUseCase(_senders, _repository.Object);
 
         var command =
-            new CreateNotificationCommand(new EmailNotificationDto("Title", "Content", "test@example.com"), "someId");
+            new CreateNotificationCommand(new EmailNotificationDto(null,"Title", "Content", "test@example.com"), "someId");
 
         // Act
         var result = await sut.CallAsync(command);

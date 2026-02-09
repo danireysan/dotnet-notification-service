@@ -18,12 +18,15 @@ public class CreateNotificationUseCase
         _senders = senders.ToDictionary(s => s.Channel);
         _repository = repository;
     }
-
     public async Task<Either<Failure, CreateNotificationResult>> CallAsync(CreateNotificationCommand @params)
     {
         var ulid = Ulid.NewUlid();
         var data = @params.Data;
         var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel);
+        
+        
+        await _senders[entity.Channel].Send(entity);
+        
         var result = await _repository.SaveNotification(entity);
 
         

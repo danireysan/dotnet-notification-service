@@ -20,7 +20,7 @@ Authorization: Bearer {{jwt}}
     "Type": "email",
     "Title": "Test Notification 2",
     "Content": "This is a test notification message.",
-    "Recipient": "asdfasdfasdf"
+    "Recipient": "danireysan@gmail.com"
 }
 
 ### Update notification (include Authorization header)
@@ -30,7 +30,7 @@ Authorization: Bearer {{jwt}}
 
 {
     "Type": "email",
-    "Id": "01KH06YTHP7ATEFX8ST96V0JBP",
+    "Id": "01KH09CDFEFR3NWA79C0BERR3E",
     "Title": "Updated Test Notification HEY 6",
     "Content": "This is  message. WAWAW",
     "Recipient": "asdfasdfasdf"
@@ -41,7 +41,7 @@ GET {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
 Authorization: Bearer {{jwt}}
 
 ### Delete notification (include Authorization header)
-DELETE {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/01KH08TRYFXSD7C2B05CHHGMXK
+DELETE {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/01KH09CDFEFR3NWA79C0BERR3E
 Content-Type: application/json
 Authorization: Bearer {{jwt}}
 

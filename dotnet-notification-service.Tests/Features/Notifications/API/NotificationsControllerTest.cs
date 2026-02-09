@@ -24,6 +24,7 @@ public class NotificationsControllerTest : IAsyncLifetime
 
     private NotificationEntity _notification;
     private readonly ILogger<NotificationsController> _logger = Mock.Of<ILogger<NotificationsController>>();
+    private readonly ILogger<EmailSender> _emailLogger = Mock.Of<ILogger<EmailSender>>();
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:16")
         .Build();
 
@@ -51,7 +52,7 @@ public class NotificationsControllerTest : IAsyncLifetime
 
         await _context.Database.EnsureCreatedAsync();
         _repository = new NotificationRepository(_context);
-        var emailSender = new EmailSender();
+        var emailSender = new EmailSender(_emailLogger);
         _createUseCase = new CreateNotificationUseCase([emailSender], _repository);
         _updateNotification = new UpdateNotificationUseCase(_repository);
         _deleteNotificationUseCase = new DeleteNotificationsUseCase(_repository);

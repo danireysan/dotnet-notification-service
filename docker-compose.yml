@@ -28,6 +28,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Host=postgres;Database=${POSTGRES_DB:-notification_db};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-password123}
       - Jwt__Key=${TOKEN_SECRET}
+      - Smtp__Password=${SMTP_APP_PASSWORD}
     depends_on:
       postgres:
         condition: service_healthy # The app won't start until Postgres is ready

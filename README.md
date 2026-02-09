@@ -14,6 +14,7 @@
 - I created a JwtOptions POCO to keep the JWT configuration in one place and make it easier to change in the future.
 - I did not use a Datasource layer in the auth feature because ASP.NET Core Identity already abstracts the data access layer.
 - I modeled the Notification entity as a record because it is an immutable data structure that represents a notification.
+- I used MailKit and used 587 port for SMTP because it is the latest port for secure email submission.
 
 ### Testing
 - I used the Arrange-Act-Assert pattern in tests to improve readability and maintainability by clearly separating the setup, execution, and verification phases of each test case.

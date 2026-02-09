@@ -6,6 +6,7 @@ using Funcky.Monads;
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Options;
 
 
 namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
@@ -13,7 +14,7 @@ namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
 
 using EitherUnit = Either<Failure, Unit>;
 
-public class EmailSender(ILogger<EmailSender> logger) : INotificationSender
+public class EmailSender(ILogger<EmailSender> logger, IOptions<SmtpOptions> config) : INotificationSender
 {
     public NotificationChannel Channel => NotificationChannel.Email;
 
@@ -21,18 +22,22 @@ public class EmailSender(ILogger<EmailSender> logger) : INotificationSender
     {
         try
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress("Sender Name", "danireysan@gmail.com"));
+            var message = new MimeMessage(); 
+            message.From.Add(new MailboxAddress("Notification Service", config.Value.Mail));
             message.To.Add(new MailboxAddress("Recipient Name", dto.Recipient));
             message.Subject = dto.Title;
             message.Body = new TextPart("plain") { Text = dto.Content };
 
             using var client = new SmtpClient();
-            // TODO: Configure email sender
             await client.ConnectAsync("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync("username", "password");
+            await client.AuthenticateAsync(config.Value.Mail, config.Value.Password);
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
+            
+            
+            logger.LogInformation("Email sent");
+            logger.LogInformation("Sent email notification");
+            logger.LogInformation("Sending email notification");
             
             return  new Unit();
         }

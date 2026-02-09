@@ -47,6 +47,14 @@ builder.Services.AddOptions<JwtOptions>()
     .ValidateDataAnnotations() 
     .ValidateOnStart();
 
+// Parse SMTP config
+builder.Services.AddOptions<SmtpOptions>()
+    .Bind(builder.Configuration.GetSection(SmtpOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
+
+
 
 // Init EF contexts
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -114,3 +122,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

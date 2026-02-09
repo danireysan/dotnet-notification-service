@@ -35,7 +35,20 @@ public class NotificationRepository(NotificationContext context) : INotification
     {
         try
         {
-            context.Remove(id);
+            if (!Ulid.TryParse(id, out var ulid))
+            {
+                var failure = new NotFoundFailure { Message = "This notification doesn't exist." };
+                return Either<Failure, Unit>.Left(failure);
+            }
+
+            var entity = await context.Notifications.FirstOrDefaultAsync(n => n.NotificationId == ulid);
+            if (entity == null)
+            {
+                var failure = new NotFoundFailure { Message = "This notification doesn't exist." };
+                return Either<Failure, Unit>.Left(failure);
+            }
+
+            context.Remove(entity);
             await context.SaveChangesAsync();
             return new Unit();
         }

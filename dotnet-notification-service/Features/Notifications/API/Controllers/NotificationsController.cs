@@ -73,8 +73,8 @@ public class NotificationsController(
         );
     }
 
-    [HttpDelete]
-    public async Task<ActionResult> DeleteNotification([FromBody] string id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteNotification(string id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return Unauthorized("User is not authenticated");

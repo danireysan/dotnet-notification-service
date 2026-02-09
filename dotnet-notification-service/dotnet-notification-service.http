@@ -41,10 +41,8 @@ GET {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
 Authorization: Bearer {{jwt}}
 
 ### Delete notification (include Authorization header)
-DELETE {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/
+DELETE {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/01KH08TRYFXSD7C2B05CHHGMXK
 Content-Type: application/json
 Authorization: Bearer {{jwt}}
 
-{
-    "Id": "01KH06YTHP7ATEFX8ST96V0JBP"
-}
+

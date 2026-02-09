@@ -13,6 +13,8 @@ using dotnet_notification_service.Features.Notifications.Application.GetNotifica
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -60,7 +62,10 @@ builder.Services.AddOptions<TwilioOptions>()
     .ValidateOnStart();
 
 
-
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dotnet-notification-service/dotnet-notification-service-firebase-adminsdk-fbsvc-871b0faa7c.json")),
+});
 
 // Init EF contexts
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -81,6 +86,7 @@ builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 // Inject Notification Dependencies
 builder.Services.AddScoped<INotificationSender, EmailSender>();
 builder.Services.AddScoped<INotificationSender, SmsSender>();
+builder.Services.AddScoped<INotificationSender, PushSender>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICreateNotificationUseCase, CreateNotificationUseCase>();
 builder.Services.AddScoped<IUpdateNotificationUseCase, UpdateNotificationUseCase>();

@@ -480,3 +480,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+dotnet-notification-service/dotnet-notification-service-firebase-adminsdk-fbsvc-871b0faa7c.json

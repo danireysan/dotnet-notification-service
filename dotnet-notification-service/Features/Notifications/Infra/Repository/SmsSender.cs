@@ -50,7 +50,6 @@ public class SmsSender : INotificationSender
                 from: new PhoneNumber(_options.FromPhoneNumber),
                 body: dto.Content
             );
-            _logger.LogInformation($"SMS Message sent to {recipient}");
             return new Unit();
         }
         catch (Exception e)
@@ -60,7 +59,7 @@ public class SmsSender : INotificationSender
             {
                 Message = $"SMS send failed because: {detailedMessage}"
             };
-            _logger.LogInformation(failure.Message);
+
             return EitherUnit.Left(failure);
         }
     }

@@ -53,6 +53,12 @@ builder.Services.AddOptions<SmtpOptions>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
+// Parse Twilio config
+builder.Services.AddOptions<TwilioOptions>()
+    .Bind(builder.Configuration.GetSection(TwilioOptions.SectionName))
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
+
 
 
 
@@ -74,6 +80,7 @@ builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
 // Inject Notification Dependencies
 builder.Services.AddScoped<INotificationSender, EmailSender>();
+builder.Services.AddScoped<INotificationSender, SmsSender>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ICreateNotificationUseCase, CreateNotificationUseCase>();
 builder.Services.AddScoped<IUpdateNotificationUseCase, UpdateNotificationUseCase>();

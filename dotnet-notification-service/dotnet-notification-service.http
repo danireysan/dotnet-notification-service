@@ -1,5 +1,5 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
-@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzA2NTk4ODUsInN1YiI6IjAxS0gxSFpNWVFKOEs3UlRQMUUyN05RMEFTIiwiZW1haWwiOiJkYW5pZWw3QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiaWF0IjoxNzcwNjUyNjg1LCJuYmYiOjE3NzA2NTI2ODV9.n-bazZRqDn1ut9hEE2zfP_-1-w1M0D0gKPoP5_45-iE
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzA2NjgyNDEsInN1YiI6IjAxS0gxU1lOOTBNTVg4WkM4OVdQWjM0V0hRIiwiZW1haWwiOiJkYW5pZWw4QHRlc3QuY29tIiwiZW1haWxfdmVyaWZpZWQiOiJ0cnVlIiwiaWF0IjoxNzcwNjYxMDQxLCJuYmYiOjE3NzA2NjEwNDF9.EQL4nIdW3KHbWG-4seXhk9pVcZIK3yhatEnv2aguh0Y
 
 
 ### Create new user
@@ -7,7 +7,7 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel7@test.com",
+    "Email": "daniel8@test.com",
     "Password": "Daniel"
 }
 
@@ -17,10 +17,10 @@ Content-Type: application/json
 Authorization: Bearer {{jwt}}
 
 {
-    "Type": "email",
+    "Type": "sms",
     "Title": "Test Notification 5",
     "Content": "This is a test notification message.",
-    "Recipient": "danireysan@gmail.com"
+    "Recipient": "+525585860228"
 }
 
 ### Update notification (include Authorization header)

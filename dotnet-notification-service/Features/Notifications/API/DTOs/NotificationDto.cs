@@ -17,8 +17,8 @@ public abstract record NotificationDto(
     public abstract NotificationChannel Channel { get; }
 };
 
-public record EmailNotificationDto(string? Id, string Title, string Content, string Recipient)
-    : NotificationDto(Id, Title, Content, Recipient)
+public record EmailNotificationDto(string? Id, string Title, string Content, string Email)
+    : NotificationDto(Id, Title, Content, Email)
 {
     public override NotificationChannel Channel => NotificationChannel.Email;
 }
@@ -27,8 +27,8 @@ public record SmsNotificationDto(
     string? Id,
     string Title,
     string Content,
-    string Recipient
-) : NotificationDto(Id, Title, Content, Recipient)
+    string Sms
+) : NotificationDto(Id, Title, Content, Sms)
 {
     public override NotificationChannel Channel => NotificationChannel.Sms;
 }
@@ -37,8 +37,8 @@ public record PushNotificationDto(
     string? Id,
     string Title,
     string Content,
-    string Recipient
-) : NotificationDto(Id, Title, Content, Recipient)
+    string DeviceId
+) : NotificationDto(Id, Title, Content, DeviceId)
 {
     public override NotificationChannel Channel => NotificationChannel.Push;
 }

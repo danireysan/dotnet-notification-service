@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API.Controllers;
 using dotnet_notification_service.Features.Notifications.API.DTOs;
@@ -8,14 +9,12 @@ using dotnet_notification_service.Features.Notifications.Application.GetNotifica
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUlid;
-using System.Security.Claims;
 using dotnet_notification_service.Tests.TestHelpers;
 using Testcontainers.PostgreSql;
 
@@ -26,7 +25,7 @@ public class NotificationsControllerTest : IAsyncLifetime
 
 {
 
-    private NotificationEntity _notification;
+    private NotificationEntity? _notification;
     private readonly ILogger<NotificationsController> _logger = Mock.Of<ILogger<NotificationsController>>();
     private readonly ILogger<EmailSender> _emailLogger = Mock.Of<ILogger<EmailSender>>();
     private readonly IOptions<SmtpOptions > _smtpOptions = Mock.Of<IOptions<SmtpOptions>>();
@@ -40,11 +39,11 @@ public class NotificationsControllerTest : IAsyncLifetime
 
     private NotificationContext? _context;
     private NotificationRepository? _repository;
-    private ICreateNotificationUseCase _createUseCase;
-    private IUpdateNotificationUseCase _updateNotification;
-    private IGetNotificationsUseCase _getNotificationsUseCase;
-    private IDeleteNotificationsUseCase _deleteNotificationUseCase;
-    private NotificationsController _sut;
+    private ICreateNotificationUseCase? _createUseCase;
+    private IUpdateNotificationUseCase? _updateNotification;
+    private IGetNotificationsUseCase? _getNotificationsUseCase;
+    private IDeleteNotificationsUseCase? _deleteNotificationUseCase;
+    private NotificationsController? _sut;
     public async Task InitializeAsync()
     {
         var ulid = Ulid.NewUlid();
@@ -74,22 +73,10 @@ public class NotificationsControllerTest : IAsyncLifetime
     public async Task CreateNotification_ShouldReturnUnauthorized_WhenThereIsNoToken()
     {
         //? Arrange
-        _sut.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext
-            {
-                // Provide an empty ClaimsPrincipal so controller.User is not null (avoids ArgumentNullException)
-                User = new ClaimsPrincipal(new ClaimsIdentity())
-            }
-        };
-
-
+        _sut!.ControllerContext = _noAuthContextStub;
         var dto = new EmailNotificationDto(null,"Hi", "Body", "test@example.com");
-
         //? Act
         var createResult = await _sut.CreateNotification(dto);
-
-
         //? Assert
         Assert.IsType<UnauthorizedObjectResult>(createResult);
     }
@@ -97,84 +84,160 @@ public class NotificationsControllerTest : IAsyncLifetime
     [Fact]
     public async Task CreateNotification_HappyPath_ReturnsOkAndPersistsData()
     {
-        // Setup: Authenticate + Valid DTO
-        // Reset DB
-        _context!.RemoveRange(_context.Notifications);
-        await _context.SaveChangesAsync();
-
-        // Auth
-        _sut.ControllerContext = _authContextStub;
+        //? Arrange: Authenticate + Valid DTO
+        await AuthSetup();
         var notification = new EmailNotificationDto(null, "Title", "Content", "Recipient");
-        // Act: POST /api/notifications
-        var result = await _sut.CreateNotification(notification);
-        // Assert: 200 OK + Verify DB record via Testcontainer
+        //? Act: POST /api/notifications
+        var result = await _sut!.CreateNotification(notification);
+        //? Assert: 200 OK + Verify DB record via Testcontainer
         Assert.IsType<OkObjectResult>(result);
-
-        // Assert - Database
-        var notificationsInDb = await _context.Notifications.ToListAsync();
-
+        //? Assert - Database
+        var notificationsInDb = await _context!.Notifications.ToListAsync();
         Assert.Single(notificationsInDb);
-
         var saved = notificationsInDb.First();
         Assert.Equal("Title", saved.Title);
         Assert.Equal("Content", saved.Content);
         Assert.Equal("Recipient", saved.Recipient);
     }
-
-    [Fact]
-    public async Task CreateNotification_InvalidDto_Returns400BadRequest()
-    {
-        // Setup: Authenticate + DTO with empty fields
-        // Act: POST /api/notifications
-        // Assert: 400 Bad Request
-    }
-
-    [Fact]
-    public async Task CreateNotification_DomainLogicFailure_ReturnsMappedError()
-    {
-        // Setup: Authenticate + DTO that triggers a Failure (e.g., duplicate)
-        // Act: POST /api/notifications
-        // Assert: e.g., 409 Conflict (via FailureMapperExtension)
-    }
-
+    
     // --- 2. GET /GetNotifications ---
     [Fact]
     public async Task GetNotifications_UserIsolation_OnlyReturnsOwnData()
     {
-        // Setup: Seed DB with data for User A and User B. Authenticate as User A.
-        // Act: GET /api/notifications
-        // Assert: List count matches User A only; User B's data is absent.
+        //? Arrange: Seed DB with data for User A and User B. Authenticate as User A.
+        // Login
+        await AuthSetup();
+        var userADto =  new EmailNotificationDto(null, "Title 1", "Content 1", "Recipient 1");
+        await _sut!.CreateNotification(userADto);
+
+        // Login and create another notification
+        _sut.ControllerContext = ControllerContextStub.Create(true, "user-id-2", "daniel2@gmail.com");
+        var userBDto = new EmailNotificationDto(null, "Title 2", "Content 2", "Recipient 2");
+        await _sut.CreateNotification(userBDto);
+        //? Act: GET /api/notifications
+        var result = await _sut.GetNotifications();
+        
+
+        //? Assert: List count matches User B only; User A's data is absent.
+        var notifications = ((OkObjectResult)result).Value as List<ResultNotificationDto>;
+        Debug.Assert(notifications != null);
+        // If we are getting an specific user notifications the easier test here is just to verify if they have one
+        Assert.Single(notifications);
     }
 
     [Fact]
     public async Task GetNotifications_EmptyState_ReturnsOkWithEmptyList()
     {
-        // Setup: Authenticate new user with zero records in DB
-        // Act: GET /api/notifications
-        // Assert: 200 OK + Json body is []
+        //? Arrange: Authenticate new user with zero records in DB
+        await AuthSetup();
+        //? Act: GET /api/notifications
+        var result = await _sut!.GetNotifications();
+        //? Assert: 200 OK + Json body is []
+        Assert.IsType<OkObjectResult>(result);
+        var notifications = ((OkObjectResult)result).Value as List<ResultNotificationDto>;
+        Debug.Assert(notifications != null);
+        Assert.Empty(notifications);
+        
     }
 
     // --- 3. PUT & DELETE (Future-Proofing) ---
+    
+    
 
     [Fact]
-    public async Task UpdateNotification_DifferentUserOwnership_Returns403Or404()
+    public async Task UpdateNotification_DifferentUserOwnership_Returns403()
     {
-        // Setup: User A tries to update User B's notification ID
-        // Act: PUT /api/notifications
-        // Assert: 403 Forbidden or 404 Not Found
+        //? Setup: User A tries to update User B's notification ID
+        await AuthSetup();
+        var userADto = new EmailNotificationDto(null, "Title 1", "Content 1", "Recipient 1");
+        await _sut!.CreateNotification(userADto);
+        var notification = await _context!.Notifications.FirstAsync();
+        // Log with another user
+        _sut.ControllerContext = ControllerContextStub.Create(true, "user-id-2", "daniel2@gmail.com");
+        //? Act: PUT /api/notifications
+        var userBDto = new EmailNotificationDto(notification.NotificationId.ToString(), "Title 2", "Content 2", "Recipient 2");
+        var result = await _sut.UpdateNotification(userBDto);
+        //? Assert: 403 Forbidden or 404 Not Found
+        Assert.IsType<ForbidResult>(result);
+    }
+    
+    [Fact]
+    public async Task UpdateNotification_ValidDTO_ReturnsOk()
+    {
+        //? Setup: User A tries to update User B's notification ID
+        await AuthSetup();
+        var userADto = new EmailNotificationDto(null, "Title 1", "Content 1", "Recipient 1");
+        await _sut!.CreateNotification(userADto);
+        var notification = await _context!.Notifications.FirstAsync();
+        var id = notification.NotificationId.ToString();
+        _context.Entry(notification).State = EntityState.Detached;
+        //? Act: PUT /api/notifications
+        var updatedDto = new EmailNotificationDto(id, "Title 2", "Content 2", "Recipient 2");
+        var result = await _sut.UpdateNotification(updatedDto);
+        //? Assert: 403 Forbidden or 404 Not Found
+        Assert.IsType<OkObjectResult>(result);
+        var updatedNotification =  _context.Notifications.First();
+        
+        //? Assert - Database
+        Assert.Equal(id, updatedNotification.NotificationId.ToString());
+        Assert.Equal(updatedDto.Title, updatedNotification.Title);
+        Assert.Equal(updatedDto.Content, updatedNotification.Content);
+        Assert.Equal(updatedDto.Recipient, updatedNotification.Recipient);
+    }
+    
+    [Fact]
+    public async Task DeleteNotification_DifferentUserOwnership_Returns403()
+    {
+        //? Setup: User A tries to delete User B's notification ID
+        await AuthSetup();
+        var userADto = new EmailNotificationDto(null, "Title 1", "Content 1", "Recipient 1");
+        await _sut!.CreateNotification(userADto);
+        var notification = await _context!.Notifications.FirstAsync();
+        // Log with another user
+        _sut.ControllerContext = ControllerContextStub.Create(true, "user-id-2", "daniel2@gmail.com");
+        //? Act: PUT /api/notifications
+        var result = await _sut.DeleteNotification(notification.NotificationId.ToString());
+        //? Assert: 403 Forbidden or 404 Not Found
+        Assert.IsType<ForbidResult>(result);
     }
 
     [Fact]
     public async Task DeleteNotification_Idempotency_Returns404OnSecondCall()
     {
-        // Setup: Authenticate + Existing ID
-        // Act: DELETE once, then DELETE again
-        // Assert: First call 200/204; Second call 404 Not Found
-    } 
+        //? Arrange: Authenticate + Existing ID
+        await AuthSetup();
+        var userDto = new EmailNotificationDto(null, "Title 1", "Content 1", "Recipient 1");
+        await _sut!.CreateNotification(userDto);
+        var notification = await _context!.Notifications.FirstAsync();
+        //? Act: DELETE once, then DELETE again
+        var firstDelete = await _sut.DeleteNotification(notification.NotificationId.ToString());
+        var secondDelete = await _sut.DeleteNotification(notification.NotificationId.ToString());
+        //? Assert: First call 200/204; Second call 404 Not Found
+        Assert.IsType<NoContentResult>(firstDelete);
+        Assert.IsType<NotFoundObjectResult>(secondDelete);
+    }
+    
     
     public async Task DisposeAsync()
     {
-        await _context.DisposeAsync();
+        await _context!.DisposeAsync();
         await _dbContainer.DisposeAsync();
+    }
+
+    private async Task AuthSetup()
+    {
+        try
+        {
+            // Reset DB
+            _context!.RemoveRange(_context.Notifications);
+            await _context.SaveChangesAsync();
+
+            // Auth
+            _sut!.ControllerContext = _authContextStub;
+        }
+        catch (Exception e)
+        {
+            throw e;
+        }
     }
 }

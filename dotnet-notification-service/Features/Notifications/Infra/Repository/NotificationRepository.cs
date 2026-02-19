@@ -35,7 +35,8 @@ public class NotificationRepository(NotificationContext context) : INotification
     {
         try
         {
-            if (!Ulid.TryParse(id, out var ulid))
+            var isValidId = Ulid.TryParse(id, out var ulid);
+            if (!isValidId)
             {
                 var failure = new NotFoundFailure { Message = "This notification doesn't exist." };
                 return Either<Failure, Unit>.Left(failure);

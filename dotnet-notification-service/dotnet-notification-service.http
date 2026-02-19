@@ -17,10 +17,10 @@ Content-Type: application/json
 Authorization: Bearer {{jwt}}
 
 {
-    "Type": "sms",
+    "Type": "email",
     "Title": "Test Notification 5",
     "Content": "This is a test notification message.",
-    "Recipient": "+525585860228"
+    "Email": "danireysan@gmail.com"
 }
 
 ### Update notification (include Authorization header)
@@ -33,7 +33,7 @@ Authorization: Bearer {{jwt}}
     "Id": "01KH09CDFEFR3NWA79C0BERR3E",
     "Title": "Updated Test Notification HEY 6",
     "Content": "This is  message. WAWAW",
-    "Recipient": "asdfasdfasdf"
+    "Email": "danireysa"
 }
 
 ### Get all notifications (include Authorization header)

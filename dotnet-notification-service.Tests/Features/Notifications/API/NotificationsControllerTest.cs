@@ -9,6 +9,7 @@ using dotnet_notification_service.Features.Notifications.Application.GetNotifica
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
+using dotnet_notification_service.Features.Notifications.Infra.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,8 +30,10 @@ public class NotificationsControllerTest : IAsyncLifetime
     private readonly ILogger<NotificationsController> _logger = Mock.Of<ILogger<NotificationsController>>();
     private readonly ILogger<EmailSender> _emailLogger = Mock.Of<ILogger<EmailSender>>();
     private readonly IOptions<SmtpOptions > _smtpOptions = Mock.Of<IOptions<SmtpOptions>>();
+    
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:16")
         .Build();
+    
 
     private readonly ControllerContext _authContextStub = ControllerContextStub.Create(true, "user-id", "daniel@gmail.com");
 
@@ -60,7 +63,8 @@ public class NotificationsControllerTest : IAsyncLifetime
 
         await _context.Database.EnsureCreatedAsync();
         _repository = new NotificationRepository(_context);
-        var emailSender = new EmailSender(_emailLogger, _smtpOptions);
+        var emailTemplateService = new EmailTemplateService();
+        var emailSender = new EmailSender(_emailLogger, _smtpOptions, emailTemplateService);
         _createUseCase = new CreateNotificationUseCase([emailSender], _repository);
         _updateNotification = new UpdateNotificationUseCase(_repository);
         _deleteNotificationUseCase = new DeleteNotificationsUseCase(_repository);

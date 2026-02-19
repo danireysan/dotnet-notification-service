@@ -12,7 +12,9 @@ using dotnet_notification_service.Features.Notifications.Application.GetNotifica
 using dotnet_notification_service.Features.Notifications.Application.GetNotificationsUseCase;
 using dotnet_notification_service.Features.Notifications.Application.UpdateNotificationUsecase;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
+using dotnet_notification_service.Features.Notifications.Domain.Services;
 using dotnet_notification_service.Features.Notifications.Infra.Repository;
+using dotnet_notification_service.Features.Notifications.Infra.Services;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -84,6 +86,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
 
 // Inject Notification Dependencies
+builder.Services.AddScoped<IEmailTemplateService, EmailTemplateService>();
 builder.Services.AddScoped<INotificationSender, EmailSender>();
 builder.Services.AddScoped<INotificationSender, SmsSender>();
 builder.Services.AddScoped<INotificationSender, PushSender>();

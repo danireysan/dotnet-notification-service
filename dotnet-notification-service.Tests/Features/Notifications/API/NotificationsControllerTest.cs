@@ -15,6 +15,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using NUlid;
+using System.Security.Claims;
+using dotnet_notification_service.Tests.TestHelpers;
 using Testcontainers.PostgreSql;
 
 namespace dotnet_notification_service.Tests.Features.Notifications.API;
@@ -31,6 +33,11 @@ public class NotificationsControllerTest : IAsyncLifetime
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder("postgres:16")
         .Build();
 
+    private readonly ControllerContext _authContextStub = ControllerContextStub.Create(true, "user-id", "daniel@gmail.com");
+
+    private readonly ControllerContext _noAuthContextStub =
+        ControllerContextStub.Create(false, "user-id", "daniel@gmail.com");
+
     private NotificationContext? _context;
     private NotificationRepository? _repository;
     private ICreateNotificationUseCase _createUseCase;
@@ -44,16 +51,11 @@ public class NotificationsControllerTest : IAsyncLifetime
         _notification = new NotificationEntity(ulid,"Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push);
         
         
-        
         await _dbContainer.StartAsync();
 
         var options = new DbContextOptionsBuilder<NotificationContext>()
             .UseNpgsql(_dbContainer.GetConnectionString())
             .Options;
-
-
-        
-
 
         _context = new NotificationContext(options);
 
@@ -74,7 +76,11 @@ public class NotificationsControllerTest : IAsyncLifetime
         //? Arrange
         _sut.ControllerContext = new ControllerContext
         {
-            HttpContext = new DefaultHttpContext()
+            HttpContext = new DefaultHttpContext
+            {
+                // Provide an empty ClaimsPrincipal so controller.User is not null (avoids ArgumentNullException)
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
         };
 
 
@@ -82,19 +88,37 @@ public class NotificationsControllerTest : IAsyncLifetime
 
         //? Act
         var createResult = await _sut.CreateNotification(dto);
-        
+
 
         //? Assert
         Assert.IsType<UnauthorizedObjectResult>(createResult);
     }
-    
+
     [Fact]
     public async Task CreateNotification_HappyPath_ReturnsOkAndPersistsData()
     {
         // Setup: Authenticate + Valid DTO
-        
+        // Reset DB
+        _context!.RemoveRange(_context.Notifications);
+        await _context.SaveChangesAsync();
+
+        // Auth
+        _sut.ControllerContext = _authContextStub;
+        var notification = new EmailNotificationDto(null, "Title", "Content", "Recipient");
         // Act: POST /api/notifications
+        var result = await _sut.CreateNotification(notification);
         // Assert: 200 OK + Verify DB record via Testcontainer
+        Assert.IsType<OkObjectResult>(result);
+
+        // Assert - Database
+        var notificationsInDb = await _context.Notifications.ToListAsync();
+
+        Assert.Single(notificationsInDb);
+
+        var saved = notificationsInDb.First();
+        Assert.Equal("Title", saved.Title);
+        Assert.Equal("Content", saved.Content);
+        Assert.Equal("Recipient", saved.Recipient);
     }
 
     [Fact]

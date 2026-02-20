@@ -16,6 +16,7 @@
 - I modeled the Notification entity as a record because it is an immutable data structure that represents a notification.
 - I used MailKit and used 587 port for SMTP because it is the latest port for secure email submission.
 - I added a metadata field to the Notification entity to allow for extensibility in the future, as it can store additional information about the notification without changing the database schema.
+- I added a small health check endpoint to allow for monitoring the health of the service, we could have used the built-in health checks in ASP.NET Core, but I wanted to keep it simple for this exercise.
 
 ### Testing
 - I used the Arrange-Act-Assert pattern in tests to improve readability and maintainability by clearly separating the setup, execution, and verification phases of each test case.

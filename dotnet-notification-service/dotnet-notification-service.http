@@ -1,5 +1,9 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
-@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE1NTMzNjEsInN1YiI6IjAxS0hXNjJDR1IwUDVRUlI0VFFWQjdESlQ5IiwiZW1haWwiOiJkYW5pZWwxMEB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTU0NjE2MSwibmJmIjoxNzcxNTQ2MTYxfQ.Dq3H5soyIhfOhOzq_TcbW43QP5rBJmWBBXOQNSxql5o
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE2MjkwMTcsInN1YiI6IjAxS0hZRTc2UE0wUlAwQlgwQjNUOTRTSEc2IiwiZW1haWwiOiJkYW5pZWwxNEB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTYyMTgxNywibmJmIjoxNzcxNjIxODE3fQ.4OH6VyX81yW3_5d2Nay1X5qg2eYs_jgteyHLHFgFXwg
+
+
+### Ping
+GET {{dotnet_notification_service_HostAddress}}/api/health/ping
 
 
 ### Create new user
@@ -7,7 +11,7 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel10@test.com",
+    "Email": "daniel14@test.com",
     "Password": "Daniel"
 }
 

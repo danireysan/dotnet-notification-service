@@ -21,6 +21,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,7 +34,38 @@ builder.Logging.SetMinimumLevel(LogLevel.Debug);
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, _, _) =>
+    {
+        var securityScheme = new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Description = "Enter your JWT token **without** the 'Bearer ' prefix. Just paste the token value.",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT"
+        };
+
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes.Add("Bearer", securityScheme);
+        
+        var securitySchemeReference = new OpenApiSecuritySchemeReference("Bearer");
+        document.Security = new List<OpenApiSecurityRequirement>
+        {
+            new()
+            {
+                [securitySchemeReference] = []
+            }
+        };
+        document.Info.Title = "Notification Service API";
+        document.Info.Version = "v1";
+        document.Info.Description = "API for managing notifications via Email, SMS, and Push channels.";
+        return Task.CompletedTask;
+    });
+});
 
 // Config api versioning
 builder.Services.AddApiVersioning(options =>
@@ -120,10 +152,34 @@ builder.Services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.Authenticatio
     options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ClockSkew =  TimeSpan.Zero,
+        ClockSkew = TimeSpan.Zero,
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings!.Issuer,
         ValidAudience = jwtSettings.Audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
+    };
+    
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine($"JWT Token validated for: {context.Principal?.Identity?.Name}");
+            return Task.CompletedTask;
+        },
+        OnMessageReceived = context =>
+        {
+            var token = context.Request.Headers["Authorization"].FirstOrDefault();
+            Console.WriteLine($"JWT Token received: {(string.IsNullOrEmpty(token) ? "NO TOKEN" : token[..Math.Min(50, token.Length)] + "...")}");
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -135,8 +191,12 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwaggerUi(options => { options.DocumentPath = "/openapi/v1.json"; });
+    app.MapOpenApi(); // Exposes the JSON/YAML doc
+    app.UseSwaggerUi(options =>
+    {
+        options.DocumentPath = "/openapi/v1.json";
+        options.DocumentTitle = "Notification Service API - Dev Mode";
+    });
 }
 
 app.UseHttpsRedirection();

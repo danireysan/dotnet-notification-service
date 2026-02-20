@@ -220,18 +220,6 @@ public class NotificationsControllerTest : IAsyncLifetime
 
     private async Task AuthSetup()
     {
-        try
-        {
-            // Reset DB
-            _context!.RemoveRange(_context.Notifications);
-            await _context.SaveChangesAsync();
-
-            // Auth
-            _sut!.ControllerContext = _authContextStub;
-        }
-        catch (Exception e)
-        {
-            throw e;
-        }
+        _sut!.ControllerContext = _authContextStub;
     }
 }

@@ -30,7 +30,8 @@ public class UpdateNotificationUseCase(INotificationRepository repository) : IUp
             @params.Data.Recipient,
             @params.UserId,
             @params.Data.Channel,
-            oldNotification.SentAt
+            oldNotification.SentAt,
+            oldNotification.SendMetadata
         );
         
         var result = await repository.UpdateNotification(newNotification);

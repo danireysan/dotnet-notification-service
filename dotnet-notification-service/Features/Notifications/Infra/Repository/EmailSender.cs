@@ -44,7 +44,7 @@ public class EmailSender(ILogger<EmailSender> logger, IOptions<SmtpOptions> conf
             logger.LogInformation("Sent email notification");
             logger.LogInformation("Sending email notification");
             var date = DateTime.UtcNow;
-            return  new SendResult(date);
+            return  new SendResult(date,  null);
         }
         catch (Exception e)
         {

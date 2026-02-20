@@ -9,5 +9,6 @@ public record NotificationEntity(
     string Recipient,
     string CreatedBy,
     NotificationChannel Channel,
-    DateTime? SentAt
+    DateTime? SentAt,
+    string? SendMetadata 
 );

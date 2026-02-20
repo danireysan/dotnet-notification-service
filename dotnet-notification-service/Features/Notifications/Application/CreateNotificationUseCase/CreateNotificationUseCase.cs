@@ -11,34 +11,45 @@ using EitherCreate = Either<Failure, CreateNotificationResult>;
 public class CreateNotificationUseCase
     : ICreateNotificationUseCase
 {
-    
     private readonly IReadOnlyDictionary<NotificationChannel, INotificationSender> _senders;
     private readonly INotificationRepository _repository;
-    
+
     public CreateNotificationUseCase(IEnumerable<INotificationSender> senders, INotificationRepository repository)
     {
         _senders = senders.ToDictionary(s => s.Channel);
         _repository = repository;
     }
+
     public async Task<EitherCreate> CallAsync(CreateNotificationCommand @params)
     {
         var ulid = Ulid.NewUlid();
         var data = @params.Data;
         var sendResult = await _senders[data.Channel].Send(data);
-        
+
         var failure = sendResult.LeftOrNone().ToNullable();
         if (failure != null)
         {
             return EitherCreate.Left(failure);
         }
-        
-        var sendAt = sendResult.RightOrNone().ToNullable()!.SentAt;
-        
-        var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel, sendAt);
-        
+
+        var rightSend = sendResult.RightOrNone().ToNullable();
+        var sendAt = rightSend?.SentAt ?? DateTime.UtcNow;
+        var metadata = rightSend?.Metadata;
+
+        var entity = new NotificationEntity(
+            ulid, 
+            data.Title, 
+            data.Content, 
+            data.Recipient, 
+            @params.UserId, 
+            data.Channel, 
+            sendAt, 
+            metadata
+        );
+
         var result = await _repository.SaveNotification(entity);
 
-        
+
         return from _ in result
             select new CreateNotificationResult();
     }

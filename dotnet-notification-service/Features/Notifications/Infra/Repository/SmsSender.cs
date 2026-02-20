@@ -44,6 +44,12 @@ public class SmsSender : INotificationSender
             var failure = new UnprocessableEntityFailure { Message = $"Recipient phone number is not a valid E.164 phone number: '{recipient}'" };
             return EitherSendResult.Left(failure);
         }
+
+        if (dto.Content.Length > 160)
+        {
+            var failure = new UnprocessableEntityFailure { Message = "Content length is more  than 160 characters" };
+            return EitherSendResult.Left(failure);
+        }
         
         try
         {
@@ -52,7 +58,7 @@ public class SmsSender : INotificationSender
                 from: new PhoneNumber(_options.FromPhoneNumber),
                 body: dto.Content
             );
-            return new SendResult(DateTime.UtcNow);
+            return new SendResult(DateTime.UtcNow, "send to: "  + recipient);
         }
         catch (Exception e)
         {

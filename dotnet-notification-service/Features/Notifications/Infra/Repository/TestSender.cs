@@ -12,6 +12,6 @@ public class TestSender : INotificationSender
     public NotificationChannel Channel => NotificationChannel.Email;
     public async Task<Either<Failure, SendResult>> Send(NotificationDto dto)
     {
-        return new  SendResult(DateTime.UtcNow);
+        return new  SendResult(DateTime.UtcNow, null);
     }
 }

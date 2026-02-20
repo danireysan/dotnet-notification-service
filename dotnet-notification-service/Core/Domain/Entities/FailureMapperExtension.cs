@@ -8,6 +8,7 @@ public static class FailureMapperExtension
     {
         return failure switch
         {
+            BadRequestFailure badRequest => controller.StatusCode(400, new ErrorResponse(badRequest.Message)),
             UnauthorizedFailure => controller.Unauthorized(new ErrorResponse(failure.Message)),
             UnprocessableEntityFailure => controller.UnprocessableEntity(new ErrorResponse(failure.Message)),
             ForbiddenFailure => controller.Forbid(),

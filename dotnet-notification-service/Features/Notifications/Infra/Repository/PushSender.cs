@@ -30,7 +30,7 @@ public class PushSender : INotificationSender
             await messaging.SendAsync(message);
 
             var date = DateTime.UtcNow;
-            return new SendResult(date);
+            return new SendResult(date, null);
         }
         catch (Exception e)
         {

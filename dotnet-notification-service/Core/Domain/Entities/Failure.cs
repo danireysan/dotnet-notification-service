@@ -6,6 +6,9 @@ public abstract record Failure
     public required string Message { get; init; }
 }
 
+// 400
+public record BadRequestFailure : Failure;
+
 // 401
 public record UnauthorizedFailure : Failure;
 

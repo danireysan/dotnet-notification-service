@@ -114,4 +114,22 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM notifications."__EFMigrationsHistory" WHERE "MigrationId" = '20260220011947_AddSendMetaDataToNotification') THEN
+    ALTER TABLE notifications."Notifications" ADD "SendMetadata" text;
+    END IF;
+END $EF$;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM notifications."__EFMigrationsHistory" WHERE "MigrationId" = '20260220011947_AddSendMetaDataToNotification') THEN
+    INSERT INTO notifications."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260220011947_AddSendMetaDataToNotification', '10.0.2');
+    END IF;
+END $EF$;
+COMMIT;
+
 

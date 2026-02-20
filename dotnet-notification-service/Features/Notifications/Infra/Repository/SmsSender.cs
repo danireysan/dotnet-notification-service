@@ -5,6 +5,8 @@ using Funcky;
 using Funcky.Monads;
 using Microsoft.Extensions.Options;
 using System.Text.RegularExpressions;
+using dotnet_notification_service.Features.Notifications.API.DTOs;
+using dotnet_notification_service.Features.Notifications.Domain.Entities;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
@@ -12,7 +14,7 @@ using Twilio.Types;
 
 namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
 
-using EitherUnit = Either<Failure, Unit>;
+using EitherSendResult = Either<Failure, SendResult>;
 public class SmsSender : INotificationSender
 {
     private readonly TwilioOptions _options;
@@ -26,7 +28,7 @@ public class SmsSender : INotificationSender
 
     public NotificationChannel Channel => NotificationChannel.Sms;
 
-    public async Task<EitherUnit> Send(NotificationEntity dto)
+    public async Task<EitherSendResult> Send(NotificationDto dto)
     {
 
         var recipient = dto.Recipient?.Trim();
@@ -34,13 +36,13 @@ public class SmsSender : INotificationSender
         {
 
             var failure = new UnprocessableEntityFailure { Message = "Recipient phone number is required." };
-            return EitherUnit.Left(failure);
+            return EitherSendResult.Left(failure);
         }
         
         if (!IsValidE164(recipient))
         {
             var failure = new UnprocessableEntityFailure { Message = $"Recipient phone number is not a valid E.164 phone number: '{recipient}'" };
-            return EitherUnit.Left(failure);
+            return EitherSendResult.Left(failure);
         }
         
         try
@@ -50,7 +52,7 @@ public class SmsSender : INotificationSender
                 from: new PhoneNumber(_options.FromPhoneNumber),
                 body: dto.Content
             );
-            return new Unit();
+            return new SendResult(DateTime.UtcNow);
         }
         catch (Exception e)
         {
@@ -60,7 +62,7 @@ public class SmsSender : INotificationSender
                 Message = $"SMS send failed because: {detailedMessage}"
             };
 
-            return EitherUnit.Left(failure);
+            return EitherSendResult.Left(failure);
         }
     }
     

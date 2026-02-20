@@ -1,4 +1,6 @@
 using dotnet_notification_service.Core.Domain.Entities;
+using dotnet_notification_service.Features.Notifications.API.DTOs;
+using dotnet_notification_service.Features.Notifications.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using dotnet_notification_service.Features.Notifications.Domain.Services;
@@ -13,13 +15,13 @@ using Microsoft.Extensions.Options;
 namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
 
 
-using EitherUnit = Either<Failure, Unit>;
+using EitherSendResult = Either<Failure, SendResult>;
 
 public class EmailSender(ILogger<EmailSender> logger, IOptions<SmtpOptions> config, IEmailTemplateService templateService) : INotificationSender
 {
     public NotificationChannel Channel => NotificationChannel.Email;
 
-    public async Task<EitherUnit> Send(NotificationEntity dto)
+    public async Task<EitherSendResult> Send(NotificationDto dto)
     {
         try
         {
@@ -41,8 +43,8 @@ public class EmailSender(ILogger<EmailSender> logger, IOptions<SmtpOptions> conf
             logger.LogInformation("Email sent");
             logger.LogInformation("Sent email notification");
             logger.LogInformation("Sending email notification");
-            
-            return  new Unit();
+            var date = DateTime.UtcNow;
+            return  new SendResult(date);
         }
         catch (Exception e)
         {
@@ -54,7 +56,7 @@ public class EmailSender(ILogger<EmailSender> logger, IOptions<SmtpOptions> conf
                 Message = "Error sending email notification",
             };
             
-            return EitherUnit.Left(failure);
+            return EitherSendResult.Left(failure);
         }
         
     }

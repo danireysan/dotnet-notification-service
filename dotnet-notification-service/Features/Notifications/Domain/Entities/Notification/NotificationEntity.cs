@@ -8,5 +8,6 @@ public record NotificationEntity(
     string Content,
     string Recipient,
     string CreatedBy,
-    NotificationChannel Channel
+    NotificationChannel Channel,
+    DateTime? SentAt
 );

@@ -1,4 +1,6 @@
 using dotnet_notification_service.Core.Domain.Entities;
+using dotnet_notification_service.Features.Notifications.API.DTOs;
+using dotnet_notification_service.Features.Notifications.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using dotnet_notification_service.Features.Notifications.Domain.Repository;
 using FirebaseAdmin.Messaging;
@@ -10,7 +12,7 @@ namespace dotnet_notification_service.Features.Notifications.Infra.Repository;
 public class PushSender : INotificationSender
 {
     public NotificationChannel Channel => NotificationChannel.Push;
-    public async Task<Either<Failure, Unit>> Send(NotificationEntity dto)
+    public async Task<Either<Failure, SendResult>> Send(NotificationDto dto)
     {
         try
         {
@@ -27,7 +29,8 @@ public class PushSender : INotificationSender
             var messaging = FirebaseMessaging.DefaultInstance;
             await messaging.SendAsync(message);
 
-            return new Unit();
+            var date = DateTime.UtcNow;
+            return new SendResult(date);
         }
         catch (Exception e)
         {
@@ -37,7 +40,7 @@ public class PushSender : INotificationSender
                 Message = $"Push send failed because: {detailedMessage}"
             };
 
-            return Either<Failure, Unit>.Left(failure);
+            return Either<Failure, SendResult>.Left(failure);
         }
     }
 }

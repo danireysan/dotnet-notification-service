@@ -31,7 +31,7 @@ public class CreateNotificationUseCaseTest
         ];
         var ulid = new Ulid();
         _notification =
-            new NotificationEntity(ulid, "Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push);
+            new NotificationEntity(ulid, "Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push, null);
     }
 
     [Fact]

@@ -64,10 +64,20 @@ builder.Services.AddOptions<TwilioOptions>()
     .ValidateOnStart();
 
 
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dotnet-notification-service/dotnet-notification-service-firebase-adminsdk-fbsvc-871b0faa7c.json")),
-});
+    try
+    {
+        FirebaseApp.Create(new AppOptions()
+        {
+            Credential = GoogleCredential.FromFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "dotnet-notification-service-firebase-adminsdk-fbsvc-871b0faa7c.json")),
+        });
+        Console.WriteLine($"Firebase initialized using credentials file: ");
+    }
+    catch (Exception ex)
+    {
+        // Don't allow Firebase initialization failures to crash the application startup.
+        Console.WriteLine($"Warning: Failed to initialize Firebase: {ex.Message}");
+    }
+
 
 // Init EF contexts
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");

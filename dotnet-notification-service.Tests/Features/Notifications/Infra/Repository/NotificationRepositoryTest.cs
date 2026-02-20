@@ -22,7 +22,7 @@ public class NotificationRepositoryTest : IAsyncLifetime
     public NotificationRepositoryTest()
     {
         var ulid = new Ulid();
-        _notification = new NotificationEntity(ulid,"Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push);
+        _notification = new NotificationEntity(ulid,"Title", "Content", "Recipient", "CreatedBy", NotificationChannel.Push, null);
     }
 
     public async Task InitializeAsync()

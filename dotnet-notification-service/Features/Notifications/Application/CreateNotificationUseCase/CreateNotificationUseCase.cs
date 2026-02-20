@@ -6,6 +6,8 @@ using NUlid;
 
 namespace dotnet_notification_service.Features.Notifications.Application.CreateNotificationUseCase;
 
+using EitherCreate = Either<Failure, CreateNotificationResult>;
+
 public class CreateNotificationUseCase
     : ICreateNotificationUseCase
 {
@@ -18,14 +20,21 @@ public class CreateNotificationUseCase
         _senders = senders.ToDictionary(s => s.Channel);
         _repository = repository;
     }
-    public async Task<Either<Failure, CreateNotificationResult>> CallAsync(CreateNotificationCommand @params)
+    public async Task<EitherCreate> CallAsync(CreateNotificationCommand @params)
     {
         var ulid = Ulid.NewUlid();
         var data = @params.Data;
-        var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel);
+        var sendResult = await _senders[data.Channel].Send(data);
         
+        var failure = sendResult.LeftOrNone().ToNullable();
+        if (failure != null)
+        {
+            return EitherCreate.Left(failure);
+        }
         
-        await _senders[entity.Channel].Send(entity);
+        var sendAt = sendResult.RightOrNone().ToNullable()!.SentAt;
+        
+        var entity = new NotificationEntity(ulid, data.Title, data.Content, data.Recipient, @params.UserId, data.Channel, sendAt);
         
         var result = await _repository.SaveNotification(entity);
 

@@ -1,5 +1,6 @@
 using dotnet_notification_service.Core.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.API.DTOs;
+using dotnet_notification_service.Features.Notifications.Domain.Entities;
 using dotnet_notification_service.Features.Notifications.Domain.Entities.Notification;
 using Funcky;
 using Funcky.Monads;
@@ -10,5 +11,5 @@ public interface INotificationSender
 {
     NotificationChannel Channel { get; }
 
-    Task<Either<Failure, Unit>> Send(NotificationEntity dto);
+    Task<Either<Failure, SendResult>> Send(NotificationDto dto);
 }

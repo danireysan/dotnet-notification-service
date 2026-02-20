@@ -6,7 +6,12 @@ public class EmailTemplateService : IEmailTemplateService
 {
     public string GenerateEmailTemplate(string title, string content)
     {
-        var templatePath = "dotnet-notification-service/Features/Notifications/Templates/email_template.html";
+        var templatePath = Path.Combine(
+            AppDomain.CurrentDomain.BaseDirectory,
+            "Features",
+            "Notifications",
+            "Templates",
+            "email_template.html");
         var template = File.ReadAllText(templatePath);
         var year = DateTime.Now.Year;
         

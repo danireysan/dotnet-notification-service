@@ -15,6 +15,7 @@
 - I did not use a Datasource layer in the auth feature because ASP.NET Core Identity already abstracts the data access layer.
 - I modeled the Notification entity as a record because it is an immutable data structure that represents a notification.
 - I used MailKit and used 587 port for SMTP because it is the latest port for secure email submission.
+- I added a metadata field to the Notification entity to allow for extensibility in the future, as it can store additional information about the notification without changing the database schema.
 
 ### Testing
 - I used the Arrange-Act-Assert pattern in tests to improve readability and maintainability by clearly separating the setup, execution, and verification phases of each test case.
@@ -29,6 +30,7 @@
 - Tests could use some refactoring to reduce duplication and improve readability
 - The Programs.cs file is a bit long because of all the service registrations and middleware configurations, it could be split into extension methods for better readability.
 - The project does not have logging implemented, which is crucial for monitoring and debugging in a production environment.
+- Metadata field in the Notification entity is currently a string, it could be changed to a more structured format such as JSON or a separate table for better querying and flexibility in the future.
 
 ## Possible improvements
 - The project could benefit from implementing cancellation tokens

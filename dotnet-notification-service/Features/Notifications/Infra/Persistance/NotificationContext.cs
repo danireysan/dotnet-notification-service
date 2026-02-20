@@ -26,6 +26,9 @@ public class NotificationContext(DbContextOptions<NotificationContext> options) 
                 
                 builder.Property(e => e.Channel)
                     .HasConversion<string>();
+                
+                builder.Property(e => e.SendMetadata)
+                    .HasColumnName("SendMetadata");
             }
         );
     }

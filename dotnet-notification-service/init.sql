@@ -132,4 +132,15 @@ BEGIN
 END $EF$;
 COMMIT;
 
+START TRANSACTION;
+
+DO $EF$
+BEGIN
+    IF NOT EXISTS(SELECT 1 FROM notifications."__EFMigrationsHistory" WHERE "MigrationId" = '20260220214822_FixSendMetadataColumn') THEN
+    INSERT INTO notifications."__EFMigrationsHistory" ("MigrationId", "ProductVersion")
+    VALUES ('20260220214822_FixSendMetadataColumn', '10.0.2');
+    END IF;
+END $EF$;
+COMMIT;
+
 

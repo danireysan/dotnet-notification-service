@@ -15,14 +15,14 @@ Content-Type: application/json
     "Password": "Daniel"
 }
 
-### Post new notification (include Authorization header)
+### Post new email notification (include Authorization header)
 POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
 Content-Type: application/json
 Authorization: Bearer {{jwt}}
 
 {
     "Type": "email",
-    "Title": "Test Notification 8",
+    "Title": "Test Notification 10",
     "Content": "This is a test notification message.",
     "Email": "danireysan@gmail.com"
 }

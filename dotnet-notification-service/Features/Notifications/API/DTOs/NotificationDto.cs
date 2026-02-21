@@ -47,6 +47,8 @@ public record ResultNotificationDto(
     string Id,
     string Title,
     string Content,
-    string Recipient
+    string Recipient,
+    string Type,
+    string? SentAt
 );
 

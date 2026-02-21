@@ -1,5 +1,11 @@
 # dotnet-notification-service
 
+## How to run the project
+
+- Docker is required to run the project
+- Docker Compose is used to run the project
+- 
+
 ## Decisions Taken for:
 ### Setup, Architecture and Design
 - The project is made with a feature folder based TDD clean architecture monolith to have a foundation for making a project that is easy to test and easy to refactor to microservices if needed

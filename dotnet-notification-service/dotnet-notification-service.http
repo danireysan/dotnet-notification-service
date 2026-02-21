@@ -1,5 +1,5 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
-@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE2MjkwMTcsInN1YiI6IjAxS0hZRTc2UE0wUlAwQlgwQjNUOTRTSEc2IiwiZW1haWwiOiJkYW5pZWwxNEB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTYyMTgxNywibmJmIjoxNzcxNjIxODE3fQ.4OH6VyX81yW3_5d2Nay1X5qg2eYs_jgteyHLHFgFXwg
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE2NDI5OTksInN1YiI6IjAxS0hZVkhXWTBRSzdBVlpUSkI2SEdTN1I4IiwiZW1haWwiOiJkYW5pZWwzMEB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTYzNTc5OSwibmJmIjoxNzcxNjM1Nzk5fQ.eSBeVcYHEDn6x7H5BzWQOZSkcAbIdYlcxpeyZhKOWS0
 
 
 ### Ping
@@ -11,7 +11,7 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel14@test.com",
+    "Email": "daniel30@test.com",
     "Password": "Daniel"
 }
 
@@ -27,6 +27,33 @@ Authorization: Bearer {{jwt}}
     "Email": "danireysan@gmail.com"
 }
 
+### Post new sms notification (include Authorization header)
+POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "Type": "sms",
+  "Title": "Test Notification 10",
+  "Content": "This is a test notification message.",
+  "Sms": "+1234567890"
+}
+
+### Post new push notification (include Authorization header)
+POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications
+Content-Type: application/json
+Authorization: Bearer {{jwt}}
+
+{
+  "Type": "push",
+  "Title": "Test Notification 10",
+  "Content": "This is a test notification message.",
+  "DeviceId": "dI4K8rUYQeyYQjBpoFdC_N:APA91bFFM99C5V4G8M-imM-GOm0eV1JWziFAi0gHEYykaNE2Rlr2cMJa9qfnzPivq_w7PHvAK75aK-27wPIqbUvis4peqFdemeKJ5sAV_UdAl6AsKng56Jo"
+}
+
+
+
+
 ### Update notification (include Authorization header)
 PUT {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/
 Content-Type: application/json
@@ -34,7 +61,7 @@ Authorization: Bearer {{jwt}}
 
 {
     "Type": "email",
-    "Id": "01KH09CDFEFR3NWA79C0BERR3E",
+    "Id": "01KHYRRRN7RS23BPMPZ4FWJDQ7",
     "Title": "Updated Test Notification HEY 6",
     "Content": "This is  message. WAWAW",
     "Email": "danireysa"
@@ -48,5 +75,8 @@ Authorization: Bearer {{jwt}}
 DELETE {{dotnet_notification_service_HostAddress}}/api/v1.0/Notifications/01KH09CDFEFR3NWA79C0BERR3E
 Content-Type: application/json
 Authorization: Bearer {{jwt}}
+
+
+
 
 

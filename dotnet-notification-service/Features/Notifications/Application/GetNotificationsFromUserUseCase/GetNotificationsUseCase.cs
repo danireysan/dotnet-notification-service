@@ -20,7 +20,7 @@ public class GetNotificationsUseCase(INotificationRepository repository) : IGetN
     private static List<ResultNotificationDto> MapNotificationDtos(List<NotificationEntity> userNotificationEntities)
     {
         var list = userNotificationEntities.Select(nt =>
-            new ResultNotificationDto(nt.NotificationId.ToString(), nt.Title, nt.Content, nt.Recipient)).ToList();
+            new ResultNotificationDto(nt.NotificationId.ToString(), nt.Title, nt.Content, nt.Recipient, nt.Channel.ToString(), nt.SentAt.ToString() )).ToList();
         return list;
     }
 }

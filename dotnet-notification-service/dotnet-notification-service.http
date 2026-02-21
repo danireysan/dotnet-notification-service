@@ -1,5 +1,5 @@
 @dotnet_notification_service_HostAddress = http://localhost:5143
-@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE2NDI5OTksInN1YiI6IjAxS0hZVkhXWTBRSzdBVlpUSkI2SEdTN1I4IiwiZW1haWwiOiJkYW5pZWwzMEB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTYzNTc5OSwibmJmIjoxNzcxNjM1Nzk5fQ.eSBeVcYHEDn6x7H5BzWQOZSkcAbIdYlcxpeyZhKOWS0
+@jwt = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UtYXVkaWVuY2UiLCJpc3MiOiJkb3RuZXQtbm90aWZpY2F0aW9uLXNlcnZpY2UiLCJleHAiOjE3NzE2NTYxMzQsInN1YiI6IjAxS0haODJRTlpCTU1GOUhXRVJLQllaNDJTIiwiZW1haWwiOiJkYW5pZWwzMUB0ZXN0LmNvbSIsImVtYWlsX3ZlcmlmaWVkIjoidHJ1ZSIsImlhdCI6MTc3MTY0ODkzNCwibmJmIjoxNzcxNjQ4OTM0fQ.LeCoKpBKP-fF1LjMLkYQEvoDDoDqXY8N9_WwDWvOaxc
 
 
 ### Ping
@@ -11,7 +11,7 @@ POST {{dotnet_notification_service_HostAddress}}/api/v1.0/Auth
 Content-Type: application/json
 
 {
-    "Email": "daniel30@test.com",
+    "Email": "daniel31@test.com",
     "Password": "Daniel"
 }
 

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NUlid;
 using dotnet_notification_service.Tests.TestHelpers;
 using Testcontainers.PostgreSql;
 
